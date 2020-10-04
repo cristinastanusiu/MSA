@@ -1,5 +1,11 @@
 # MSA
 
+acces la lista contacte
+
+la install, creare cont cu nr de tel
+
+send invites to install the app
+
 person creates an event
 
 prieteni din lista de contacte
