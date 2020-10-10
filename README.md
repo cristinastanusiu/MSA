@@ -1,5 +1,8 @@
 # MSA
 
+DIAGRAM:
+https://miro.com/app/board/o9J_kin5_-s=/
+
 acces la lista contacte
 
 la install, creare cont cu nr de tel
