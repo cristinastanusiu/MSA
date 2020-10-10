@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import {useState }from "react";
 import {  FlatList } from 'react-native';
+import RNSimData from 'react-native-sim-data'
 
 export default function App() {
   const [data, setData] = useState([]);
@@ -13,7 +14,8 @@ export default function App() {
         const { data } = await Contacts.getContactsAsync();
         if (data.length > 0) {
           setData(data);
-          console.log(data);
+          //console.log(ata);
+          console.log(JSON.stringify(RNSimData.getSimInfo()));
         }
       }
     })();
