@@ -1,22 +1,22 @@
 import 'react-native-gesture-handler';
 import React from 'react';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import ContactsScreen from './Components/ContactsScreen'
 import UserProfileScreen from './Components/UserProfileScreen';
 import EventsFeedScreen from './Components/EventsFeedScreen';
 
 const App = () => {
-  const Stack = createStackNavigator();
+  const Tab = createMaterialTopTabNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Events" component={EventsFeedScreen} />
-        <Stack.Screen name="Contacts" component={ContactsScreen} />
-        <Stack.Screen name="Profile" component={UserProfileScreen} />
-      </Stack.Navigator>
+      <Tab.Navigator initialRouteName="Events">
+        <Tab.Screen name="Profile" component={UserProfileScreen} />
+        <Tab.Screen name="Events" component={EventsFeedScreen} />
+        <Tab.Screen name="Contacts" component={ContactsScreen} />
+      </Tab.Navigator>
     </NavigationContainer>
   );
-};
+}
 
 export default App;
