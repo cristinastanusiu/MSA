@@ -6,12 +6,12 @@ import {
   TextInput,
   SafeAreaView,
   FlatList,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 
-export default class ContactsPage extends React.Component {
+export default class ContactsScreen extends React.Component {
   constructor(){
     super()
     this.state={
