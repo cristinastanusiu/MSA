@@ -5,10 +5,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import ContactsScreen from './Components/ContactsScreen'
 import UserProfileScreen from './Components/UserProfileScreen';
 import EventsFeedScreen from './Components/EventsFeedScreen';
+import Events from './Components/EventsScreen';
 
 const App = () => {
   const Tab = createMaterialTopTabNavigator();
   return (
+    // <Events></Events>
     <NavigationContainer>
       <Tab.Navigator initialRouteName="Events">
         <Tab.Screen name="Profile" component={UserProfileScreen} />
