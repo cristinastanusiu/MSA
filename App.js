@@ -10,14 +10,14 @@ import Events from './Components/EventsScreen';
 const App = () => {
   const Tab = createMaterialTopTabNavigator();
   return (
-    // <Events></Events>
-    <NavigationContainer>
-      <Tab.Navigator initialRouteName="Events">
-        <Tab.Screen name="Profile" component={UserProfileScreen} />
-        <Tab.Screen name="Events" component={EventsFeedScreen} />
-        <Tab.Screen name="Contacts" component={ContactsScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Events></Events>
+    // <NavigationContainer>
+    //   <Tab.Navigator initialRouteName="Events">
+    //     <Tab.Screen name="Profile" component={UserProfileScreen} />
+    //     <Tab.Screen name="Events" component={EventsFeedScreen} />
+    //     <Tab.Screen name="Contacts" component={ContactsScreen} />
+    //   </Tab.Navigator>
+    // </NavigationContainer>
   );
 }
 

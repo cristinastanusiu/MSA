@@ -3,11 +3,24 @@ import {StyleSheet,
         Text,
         View,
         ScrollView,
-        Image} from 'react-native';
+        Image,
+        TouchableOpacity,
+        Modal} from 'react-native';
+import Card from "./shared/Card";
+import { AntDesign } from '@expo/vector-icons'; 
+import { Entypo } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons'; 
+import AddEvent from './AddEvent'; 
+
+const joinButton = (host) => {
+    console.log('Successfully join to %s event!', host);
+    // do something
+    };
 
 
-export default class Events extends React.Component{
-    render(){
+export default function Events(){ 
+
+    const [modalOpen,setModalOpen] = useState(false);    
     const events = [
         {host:'Cristina',title:'Lunch',datetime:'today 12 AM',key:'1',place:'Sebesel',maxPers:6,actualPers:3},
         {host:'Ana',title:'Dinner',datetime:'tomorrow',key:'2',place:'Tg Jiu',maxPers:6,actualPers:6},
@@ -20,49 +33,130 @@ export default class Events extends React.Component{
     ];
         return(
             <View style = {styles.container}>
+                <Entypo name="add-to-list"
+                        size={30}
+                        color="black"
+                        style={styles.addEventButton}
+                        onPress={() => setModalOpen(true)}
+                        />
+                
+                <Modal visible={modalOpen} animationType='slide'>
+                    <View style={styles.modalContent}>
+                        <MaterialIcons name="arrow-back"
+                                        size={40} 
+                                        color="black"
+                                        style={styles.backButton}
+                                        onPress={() => setModalOpen(false)}
+                                        />
+                        <AddEvent></AddEvent>
+                    </View>
+                </Modal>
                 <ScrollView>
                 {events.map(item =>  (
-                    <View key={item.key} style={styles.header}>
+                    <Card>
+                    <Text style={styles.host}>{item.host}</Text>
                         <Image
                         style={styles.userImage} 
                         source={require('../assets/default.png')}
                         /> 
-                       <Text style={styles.item}>
-                            {item.host} {item.title} {item.datetime}
+                       <Text style={styles.title}>
+                        {item.title} {item.place}
                             </Text>
-                        <Text>Max no persons: {item.maxPers}</Text>
-                        <Text>Max no persons: {item.actualPers}</Text>
 
-                    </View>
+                        <Text style={styles.datetime}>{item.datetime}</Text>
+                        <Text style={styles.available}>Availability: {item.actualPers}/{item.maxPers}</Text>
+                        <TouchableOpacity
+                        onPress={joinButton(item.host)}
+                        style={styles.joinButton}>
+                        <AntDesign name="adduser" size={30} color="black" />
+                    </TouchableOpacity>
+                    </Card>
                     )
                 )}
                 </ScrollView>
             </View>
         );
     }
-}
 
 const styles = StyleSheet.create({
     container:{
         flex:1,
         backgroundColor:'#fff',
-        paddingTop:40,
+        paddingTop:50,
         paddingHorizontal:20
+
     },
     header:{
         marginTop:30, //space between regions
-        padding:20,
-        backgroundColor:'#66CCCC'
+        padding:10,
+        paddingLeft:90,
+        backgroundColor: '#D9C6BF'//#66CCCC'
     },
-    item:{
-        fontSize:18,
-        color:'white',
+    title:{
+        fontSize:20,
+        color:'#8C625E',
+        paddingLeft:90,
+        position:'absolute',
     },
     userImage:{
+        flex:1,
+        // position:'absolute',
         width:70,
         height:70,
         borderRadius:30,
-    
+    },
+    host:{
+        fontSize:20,
+        // textAlign: 'center',
+        color:'#8C625E',
+        position:'absolute',
+        // alignContent:'center',
+        left:15,
+        top:-28
+    },
+    datetime:{
+        color:'#8C625E',
+        fontSize:17,
+        position:'absolute',
+        left:90,
+        top:22
+    },
+    available:{
+        color:'#8C625E',
+        fontSize:17,
+        position:'absolute',
+        left:90,
+        top:40
+    },
+    joinButton:{
+        width: 70,
+        height: 70,
+        color:'#8C625E',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 100,
+        backgroundColor: '#F2E0D5',
+        alignSelf: 'flex-end',
+        position:'absolute',        
+    },
+    addEventButton:{
+        borderWidth:3,
+        borderColor:"#f2f2f2",
+        padding:10,
+        borderRadius:10,
+        alignSelf:'center'
+    },
+    backButton:{
+        borderWidth:3,
+        borderColor:"#f2f2f2",
+        marginTop:50,
+        marginLeft:10,
+        borderRadius:10,
+        position:'absolute'
+    },
+    modalContent:{
+        flex:1
     }
 
 });
