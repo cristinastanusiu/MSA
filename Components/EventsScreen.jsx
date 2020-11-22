@@ -10,18 +10,13 @@ import Card from "./shared/Card";
 import { AntDesign } from '@expo/vector-icons'; 
 import { Entypo } from '@expo/vector-icons'; 
 import { MaterialIcons } from '@expo/vector-icons'; 
-import AddEvent from './AddEvent'; 
-
-const joinButton = (host) => {
-    console.log('Successfully join to %s event!', host);
-    // do something
-    };
+import AddEventForm from './AddEventForm'; 
 
 
 export default function Events(){ 
 
     const [modalOpen,setModalOpen] = useState(false);    
-    const events = [
+    const [events,setEvents] = useState([
         {host:'Cristina',title:'Lunch',datetime:'today 12 AM',key:'1',place:'Sebesel',maxPers:6,actualPers:3},
         {host:'Ana',title:'Dinner',datetime:'tomorrow',key:'2',place:'Tg Jiu',maxPers:6,actualPers:6},
         {host:'Vali',title:'Movie',datetime:'tomorrow',key:'3',place:'Tg Jiu',maxPers:6,actualPers:3},
@@ -30,7 +25,15 @@ export default function Events(){
         {host:'Gosa',title:'Movie',datetime:'tomorrow',key:'6',place:'Tg Jiu',maxPers:4,actualPers:0},
         {host:'Dori',title:'Movie',datetime:'tomorrow',key:'7',place:'Tg Jiu',maxPers:4,actualPers:0},
         {host:'Mihai',title:'Movie',datetime:'tomorrow',key:'8',place:'Tg Jiu',maxPers:4,actualPers:0},
-    ];
+    ]);
+
+    const addEvent = (myevent) => {
+        myevent.key = events.length + 1;//create key
+        setEvents((currentEvents) => {
+            return [myevent, ...currentEvents]
+        });
+        setModalOpen(false);
+    }
         return(
             <View style = {styles.container}>
                 <Entypo name="add-to-list"
@@ -42,18 +45,18 @@ export default function Events(){
                 
                 <Modal visible={modalOpen} animationType='slide'>
                     <View style={styles.modalContent}>
+                        <AddEventForm addEvent={addEvent}/>
                         <MaterialIcons name="arrow-back"
                                         size={40} 
                                         color="black"
                                         style={styles.backButton}
                                         onPress={() => setModalOpen(false)}
                                         />
-                        <AddEvent></AddEvent>
                     </View>
                 </Modal>
                 <ScrollView>
                 {events.map(item =>  (
-                    <Card>
+                    <Card key={item.key}>
                     <Text style={styles.host}>{item.host}</Text>
                         <Image
                         style={styles.userImage} 
@@ -62,14 +65,14 @@ export default function Events(){
                        <Text style={styles.title}>
                         {item.title} {item.place}
                             </Text>
-
                         <Text style={styles.datetime}>{item.datetime}</Text>
                         <Text style={styles.available}>Availability: {item.actualPers}/{item.maxPers}</Text>
-                        <TouchableOpacity
-                        onPress={joinButton(item.host)}
-                        style={styles.joinButton}>
-                        <AntDesign name="adduser" size={30} color="black" />
-                    </TouchableOpacity>
+                        <TouchableOpacity 
+                            key = {item.key}
+                            onPress={() => console.log('Successfully join to %s event!', item.host)}
+                            style={styles.joinButton}>
+                            <AntDesign name="adduser" size={30} color="black" />
+                        </TouchableOpacity>
                     </Card>
                     )
                 )}
@@ -138,7 +141,8 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         backgroundColor: '#F2E0D5',
         alignSelf: 'flex-end',
-        position:'absolute',        
+        position:'absolute',      
+        opacity:1  
     },
     addEventButton:{
         borderWidth:3,
