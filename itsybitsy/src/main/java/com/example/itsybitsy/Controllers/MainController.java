@@ -1,6 +1,6 @@
 package com.example.itsybitsy.Controllers;
 
-import com.example.itsybitsy.Services.EventsService;
+//import com.example.itsybitsy.Services.EventsService;
 import com.example.itsybitsy.Services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,13 +18,20 @@ import java.util.List;
 public class MainController {
     @Autowired
     private UsersService usersService;
-    @Autowired
-    private EventsService eventsService;
+//    @Autowired
+//    private EventsService eventsService;
 
     @GetMapping("/getEvents")
     @ResponseBody
-    public ResponseEntity<String> getMyContactsEvents(List<String> phoneNumbers){
-        eventsService.getMyContactsEvents(phoneNumbers);
+    public ResponseEntity<String> getMyContactsEvents(){
+//        eventsService.getMyContactsEvents(phoneNumbers);
+        return new ResponseEntity<>("Event1, Event2, Event3...", HttpStatus.OK);
+    }
+
+    @GetMapping("/getUsers")
+    @ResponseBody
+    public ResponseEntity<String> getUsersForContacts(List<String> phoneNumbers){
+        usersService.getUsers(phoneNumbers);
         return new ResponseEntity<>("Event1, Event2, Event3...", HttpStatus.OK);
     }
 

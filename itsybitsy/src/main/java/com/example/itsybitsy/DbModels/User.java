@@ -15,10 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
     @Id
-    private Integer id;
-    private String FirstName;
-    private String LastName;
-    private String phoneNumber;
+    public Integer id;
+    public String FirstName;
+    public String LastName;
+    public String phoneNumber;
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "host", orphanRemoval = true)
     private List<Event> events = new ArrayList<>();
