@@ -10,7 +10,6 @@ import {
 import { Formik } from 'formik';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
-import { onChange } from 'react-native-reanimated';
 
 export default function AddEventForm({ addEvent }) {
     const [isVisible, setPickerOpen] = useState(false);
