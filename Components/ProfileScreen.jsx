@@ -29,7 +29,6 @@ export default function ProfileScreen() {
     const [rerun, setRerun] = useState(false);
 
     const [image, setImage] = useState(null);
-    const [camera, setCamera] = useState(false);
 
 
     useEffect(() => {
@@ -115,10 +114,10 @@ export default function ProfileScreen() {
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }>
                     <View style={styles.content} >
-                        <Text>User profile </Text>
+                        {!image && <Image source={require('../assets/default.png')} style={styles.itemImage} />}
+                        {image && <Image source={{ uri: image }} style={styles.itemImage} />}
                         <TouchableOpacity onPress={ClickAddImage} style = {styles.btnAddImage}>
-                            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200,marginTop: 400 }} />}
-                            <Text style = {styles.txtBtn}>Add Profile Image</Text>
+                            <Text style = {styles.txtBtn}>Edit Profile Picture</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -134,9 +133,11 @@ const styles = StyleSheet.create({
         marginTop: 60,
     },
     btnAddImage: {
-        backgroundColor: "#0080ff",
+        marginTop:10,
+        backgroundColor: "#8C625E",
         height:50,
-        width: width - 60,
+        width: 180,
+        borderRadius: 15,
         alignItems:'center',
         justifyContent:'center'
         },
@@ -144,10 +145,10 @@ const styles = StyleSheet.create({
         color:'#ffffff',
     },
     itemImage:{
-        backgroundColor: '#2F455C',
         height: 150,
-        width:width  - 60,
-        borderRadius: 15,
+        width: 150 ,
+        borderRadius: 60,
+        marginTop: 0,
         resizeMode:'contain'
     }
 });
