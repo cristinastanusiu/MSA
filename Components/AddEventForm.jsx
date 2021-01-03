@@ -22,11 +22,10 @@ export default function AddEventForm({ addEvent }) {
                 <Formik
                     initialValues={{ title: '', place: '', datetime: '', maxPers: 0 }}
                     onSubmit={(values, actions) => {
-                        //add functionality here 
+                        //add functionality here
                         // actions.resetForm();
                         values.datetime = chosenDate;
                         addEvent(values);
-                        console.log(values);
                     }}
                 >
                     {props => (
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
         //     borderColor:'#D9C6BF',
         //     borderRadius:20,
         //     paddingVertical:15
-        // }}> 
+        // }}>
         //     <Text style={{top:-40,left:0,fontSize:18}}>Event name</Text>
         //     <TextInput style={{paddingHorizontal:10}}></TextInput>
 
@@ -171,17 +170,16 @@ const styles = StyleSheet.create({
 
 
 
-        // <TextInput 
+        // <TextInput
         // style={styles.input}
         // placeholder='Date'
         // onChangeText={props.handleChange('date')}
         // values={props.values.date}
         // />
 
-        // <TextInput 
+        // <TextInput
         // style={styles.input}
         // placeholder='Time'
         // onChangeText={props.handleChange('time')}
         // values={props.values.time}
         // />
-
