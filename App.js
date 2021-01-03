@@ -6,18 +6,20 @@ import ContactsScreen from './Components/ContactsScreen'
 import UserProfileScreen from './Components/UserProfileScreen';
 import EventsFeedScreen from './Components/EventsFeedScreen';
 import Events from './Components/EventsScreen';
+import ProfileScreen from "./Components/ProfileScreen";
 
 const App = () => {
   const Tab = createMaterialTopTabNavigator();
   return (
-    <Events></Events>
-    // <NavigationContainer>
-    //   <Tab.Navigator initialRouteName="Events">
-    //     <Tab.Screen name="Profile" component={UserProfileScreen} />
-    //     <Tab.Screen name="Events" component={EventsFeedScreen} />
-    //     <Tab.Screen name="Contacts" component={ContactsScreen} />
-    //   </Tab.Navigator>
-    // </NavigationContainer>
+    // <Events></Events>
+    <NavigationContainer>
+      <Tab.Navigator initialRouteName="Events">
+        {/*<Tab.Screen name="Profile" component={UserProfileScreen} />4*/}
+          <Tab.Screen name="Profile" component={ProfileScreen} />
+          <Tab.Screen name="Events" component={Events} />
+          <Tab.Screen name="Contacts" component={ContactsScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
