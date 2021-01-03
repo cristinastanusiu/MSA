@@ -13,7 +13,7 @@ const App = () => {
   return (
     // <Events></Events>
     <NavigationContainer>
-      <Tab.Navigator initialRouteName="Events">
+      <Tab.Navigator initialRouteName="ProfileScreen">
         {/*<Tab.Screen name="Profile" component={UserProfileScreen} />4*/}
           <Tab.Screen name="Profile" component={ProfileScreen} />
           <Tab.Screen name="Events" component={Events} />
