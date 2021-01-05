@@ -25,7 +25,6 @@ const wait = (timeout) => {
 
 export default function Events() {
   const [refreshing, setRefreshing] = useState(false);
-  const [rerun, setRerun] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [eventList, setEventList] = useState([]);
 
@@ -45,12 +44,7 @@ export default function Events() {
   }
 
   useEffect(() => {
-        axios.get('http://192.168.0.175:8080/getEvents').then(res => {
-          var key_cnt = 0;
-          res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
-          setEventList(res.data);
-          console.log(res.data);
-        });
+        getEvents();
       },[])
 
   const addEvent = (myevent) => {
