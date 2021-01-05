@@ -7,13 +7,13 @@ import ContactsScreen from './Components/ContactsScreen';
 import Events from './Components/EventsScreen';
 import {Icon} from 'react-native-elements';
 import LoginScreen from './Components/LoginScreen';
+import LogoutScreen from './Components/LogoutScreen';
 import Tab1 from './Components/Tab1';
 import {Provider as AuthProvider} from './Context/AuthContext.js';
 import {Context as AuthContext} from './Context/AuthContext.js';
 // import ProfileScreen from "./Components/ProfileScreen";
 //
 const AuthStack = createStackNavigator();
-
 function authFlow() {
   return (
     <AuthStack.Navigator>
@@ -40,14 +40,23 @@ function homeFlow() {
           let iconName;
 
           switch (route.name) {
-            case 'Tab1':
+            case 'Contacts':
               iconName = focused
-                ? 'ios-checkbox'
-                : 'ios-checkbox-outline';
+                ? 'people'
+                : 'people-outline';
               break;
-          }
+              case 'Events':
+                iconName = focused
+                ? 'football'
+                : 'football-outline';
+                break;
+              case 'Profile':
+                iconName = focused
+                ? 'person-circle'
+                : 'person-circle-outline';
+                break;
 
-          // You can return any component that you like here!
+          }
           return (
             <Icon name={iconName} type="ionicon" size={size} color={color} />
           );
@@ -56,8 +65,11 @@ function homeFlow() {
       tabBarOptions={{
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
-      }}>
-      <Tab.Screen name="Tab1" component={Tab1} />
+      }}
+      initialRouteName="Events">
+      <Tab.Screen name="Contacts" component={ContactsScreen} />
+      <Tab.Screen name="Events" component={LogoutScreen} />
+      <Tab.Screen name="Profile" component={LogoutScreen} />
     </Tab.Navigator>
   );
 }
@@ -96,20 +108,3 @@ export default () => {
     </AuthProvider>
   );
 };
-
-// const App = () => {
-//   const Tab = createMaterialTopTabNavigator();
-//   return (
-//     // <Events></Events>
-//     <NavigationContainer>
-//       <Tab.Navigator initialRouteName="Events">
-// //          <Tab.Screen name="Profile" component={ProfileScreen} />
-//           <Tab.Screen name="Events" component={Events} />
-//
-//           <Tab.Screen name="Contacts" component={ContactsScreen} />
-//       </Tab.Navigator>
-//     </NavigationContainer>
-//   );
-// }
-
-// export default App;

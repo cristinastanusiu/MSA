@@ -4,19 +4,19 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Input, Button} from 'react-native-elements';
 import {Context as AuthContext} from '../Context/AuthContext.js';
 
-const Signin = ({navigation}) => {
-  const [email, setEmail] = useState('');
+const LoginScreen = ({navigation}) => {
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const {state, signin} = useContext(AuthContext);
 
   return (
     <View style={styles.master}>
-      <Text style={styles.header}>Auth Demo</Text>
+      <Text style={styles.header}>Eventsy</Text>
       <Input
-        placeholder="Email"
-        onChangeText={setEmail}
-        value={email}
-        leftIcon={<Icon name="envelope" type="font-awesome" size={24} />}
+        placeholder="Phone Number"
+        onChangeText={setPhoneNumber}
+        value={phoneNumber}
+        leftIcon={<Icon name="phone" type="font-awesome" size={24} />}
       />
       <Input
         placeholder="Password"
@@ -29,13 +29,13 @@ const Signin = ({navigation}) => {
         title="Login"
         type="clear"
         onPress={() => {
-          signin({email, password});
+          signin({phoneNumber, password});
         }}
       />
       <View style={styles.link}>
         <Text style={styles.text}>Dont have an account? </Text>
         <TouchableOpacity onPress={() => {}}>
-          <Text style={styles.text}>Sign up Here.</Text>
+          <Text style={styles.text}>Sign up here.</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Signin;
+export default LoginScreen;

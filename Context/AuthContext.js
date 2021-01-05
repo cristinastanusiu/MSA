@@ -3,12 +3,12 @@ import createDataContext from './createDataContext';
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'signout':
-      return {token: null, email: ''};
+      return {token: null, phoneNumber: ''};
     case 'signin':
     case 'signup':
       return {
         token: action.payload.token,
-        email: action.payload.email,
+        email: action.payload.phoneNumber,
       };
     default:
       return state;
@@ -16,20 +16,26 @@ const authReducer = (state, action) => {
 };
 
 const signup = dispatch => {
-  return ({email, password}) => {
+  return ({phoneNumber, password}) => {
     console.log('Signup');
   };
 };
 
 const signin = dispatch => {
-  return ({email, password}) => {
-    // Do some API Request here
+  return ({phoneNumber, password}) => {
+    let token = 'null';
+    // axios.post('http://192.168.0.175:8080/login',
+    // {
+    //   phoneNumber: phoneNumber,
+    //   password: password
+    // }).then(res => console.log(res));
+
     console.log('Signin');
     dispatch({
       type: 'signin',
       payload: {
         token: 'some access token here',
-        email,
+        phoneNumber,
       },
     });
   };
@@ -44,5 +50,5 @@ const signout = dispatch => {
 export const {Provider, Context} = createDataContext(
   authReducer,
   {signin, signout, signup},
-  {token: null, email: ''},
+  {token: null, phoneNumber: ''},
 );
