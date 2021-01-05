@@ -5,8 +5,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import ContactsScreen from './Components/ContactsScreen';
 import Events from './Components/EventsScreen';
 import ProfileScreen from "./Components/ProfileScreen";
+import * as firebase from "firebase";
+import ApiKeys from "./Components/constants/ApiKeys";
+
 
 const App = () => {
+    if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.firebaseConfig)}
+
   const Tab = createMaterialTopTabNavigator();
   return (
     // <Events></Events>

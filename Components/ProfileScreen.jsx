@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {View,
-    SafeAreaView,
     StyleSheet,
     Image,
-    Dimensions,
     ScrollView,
     RefreshControl,
-    CameraRoll,
+    Alert,
     TouchableOpacity} from 'react-native';
 import {
     Text,
@@ -15,6 +13,8 @@ import {ActionSheet,Root}  from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as MediaLibrary from 'expo-media-library';
+import {Platform} from "react-native-web";
+import * as firebase from 'firebase';
 
 
 const wait = (timeout) => {
@@ -22,14 +22,26 @@ const wait = (timeout) => {
         setTimeout(resolve, timeout);
     });
 }
-const width = Dimensions.get('window').width;
+
+
+const uploadImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    console.log("FIREBASE IS  "  + firebase.name)
+
+    console.log("uri is "  + uri)
+    console.log("response is "  + response)
+    console.log("Blob is "  + blob)
+
+    let ref = firebase.storage().ref().child('test');
+    return ref.put(blob);
+
+}
 
 export default function ProfileScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [rerun, setRerun] = useState(false);
-
     const [image, setImage] = useState(null);
-
 
     useEffect(() => {
         (async () => {
@@ -67,6 +79,10 @@ export default function ProfileScreen() {
                 setImage(result.uri);
                 await MediaLibrary.saveToLibraryAsync(result.uri);
             }
+            await uploadImage(result.uri).then(()=>
+            {
+                Alert.alert("successs");
+            });
             return;
         }
         console.log('Camera or Camera Roll perimission denied!');
@@ -82,7 +98,12 @@ export default function ProfileScreen() {
         console.log(result);
         if (!result.cancelled) {
             setImage(result.uri);
+            await uploadImage(result.uri).then(()=>
+            {
+                Alert.alert("successs");
+            });
         }
+
     };
 
     const ClickAddImage = () =>{
