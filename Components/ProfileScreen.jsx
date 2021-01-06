@@ -7,7 +7,7 @@ import {View,
     RefreshControl,
     Alert,
     TouchableOpacity} from 'react-native';
-import {ActionSheet}  from 'native-base';
+import {ActionSheet,Root}  from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as MediaLibrary from 'expo-media-library';
@@ -75,7 +75,7 @@ export default function ProfileScreen() {
                 aspect: [4, 3],
                 maxWidth: 150,
                 maxHeight: 150,
-                quality: 3,
+                quality: 1,
             });
             console.log(result);
             if (!result.cancelled) {
@@ -100,7 +100,7 @@ export default function ProfileScreen() {
             maxWidth: 150,
             maxHeight: 150,
             aspect: [4, 3],
-            quality: 3,
+            quality: 1,
         });
         console.log(result);
         if (!result.cancelled) {
@@ -145,6 +145,7 @@ export default function ProfileScreen() {
 
 
     return (
+        <Root>
             <ScrollView
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -170,6 +171,7 @@ export default function ProfileScreen() {
                         <AntDesign name="logout" size={30} color="black" />
                     </TouchableOpacity>
                     </ScrollView>
+        </Root>
 );
 }
 
