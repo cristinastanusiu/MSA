@@ -17,86 +17,80 @@ import AddEventForm from './AddEventForm';
 import axios from 'axios';
 
 const wait = (timeout) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, timeout);
-    });
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
 }
 
 
 export default function Events() {
-    const [refreshing, setRefreshing] = useState(false);
-    const [rerun, setRerun] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [eventList, setEventList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [eventList, setEventList] = useState([]);
 
-    const onRefresh = React.useCallback(() => {
-        setRefreshing(true);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getEvents();
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+
+  const getEvents = () => {
+    axios.get('http://192.168.0.175:8080/getEvents').then(res => {
+      var key_cnt = 0;
+      res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
+      setEventList(res.data);
+      console.log(res.data);
+    });
+  }
+
+  useEffect(() => {
         getEvents();
-        wait(2000).then(() => setRefreshing(false));
-    }, []);
+      },[])
 
-    const getEvents = () => {
-        axios.get('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
-            var key_cnt = 0;
-            res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
-            setEventList(res.data);
-            // console.log(res.data);
-        });
+  const addEvent = (myevent) => {
+      axios.post('http://192.168.0.175:8080/addEvent/111',
+      {
+        dateTime: "2021-01-03 14:42:51",
+        maxPers: myevent.maxPers,
+        place: myevent.place,
+        title: myevent.title
+      }).then(res => console.log(res));
+      setModalOpen(false);
     }
 
-    useEffect(() => {
-        axios.get('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
-            var key_cnt = 0;
-            res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
-            setEventList(res.data);
-            console.log(res.data);
-        });
-    },[])
-
-    const addEvent = (myevent) => {
-        axios.post('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/addEvent/0768824072',
-            {
-                dateTime: "2021-01-03 14:42:51",
-                maxPers: myevent.maxPers,
-                place: myevent.place,
-                title: myevent.title
-            }).then(res => console.log(res));
-        setModalOpen(false);
+  return (
+  <View style={styles.container}>
+    <Entypo name="add-to-list"
+            size={30}
+            color="black"
+            style={styles.addEventButton}
+            onPress={() => setModalOpen(true)}
+    />
+    <Modal visible={modalOpen} animationType='slide'>
+      <View style={styles.modalContent}>
+        <AddEventForm addEvent={addEvent} />
+        <MaterialIcons name="arrow-back" size={40} color="black" style={styles.backButton} onPress={() => setModalOpen(false)}/>
+      </View>
+    </Modal>
+    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      {eventList.map(item => (
+        <Card>
+          <Text style={styles.host}> to do </Text>
+          <Image style={styles.userImage} source={require('../assets/default.png')}/>
+          <Text style={styles.title}>
+          {item.title} {item.place}
+          </Text>
+          <Text style={styles.datetime}>{item.datetime}</Text>
+          <Text style={styles.available}>Availability: to do/{item.maxPers}</Text>
+          <TouchableOpacity onPress={() => console.log('Successfully joined event!')} style={styles.joinButton}>
+            <AntDesign name="adduser" size={30} color="black" />
+          </TouchableOpacity>
+       </Card>)
+      )
     }
-
-    return (
-        <View style={styles.container}>
-            <Entypo name="add-to-list"
-                    size={30}
-                    color="black"
-                    style={styles.addEventButton}
-                    onPress={() => setModalOpen(true)}
-            />
-            <Modal visible={modalOpen} animationType='slide'>
-                <View style={styles.modalContent}>
-                    <AddEventForm addEvent={addEvent} />
-                    <MaterialIcons name="arrow-back" size={40} color="black" style={styles.backButton} onPress={() => setModalOpen(false)}/>
-                </View>
-            </Modal>
-            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-                {eventList.map(item => (
-                    <Card>
-                        <Text style={styles.host}> to do </Text>
-                        <Image style={styles.userImage} source={require('../assets/default.png')}/>
-                        <Text style={styles.title}>
-                            {item.title} {item.place}
-                        </Text>
-                        <Text style={styles.datetime}>{item.datetime}</Text>
-                        <Text style={styles.available}>Availability: to do/{item.maxPers}</Text>
-                        <TouchableOpacity onPress={() => console.log('Successfully joined event!')} style={styles.joinButton}>
-                            <AntDesign name="adduser" size={30} color="black" />
-                        </TouchableOpacity>
-                    </Card>)
-                )
-                }
-            </ScrollView>
-        </View>
-    );
+  </ScrollView>
+</View>
+);
 }
 
 const styles = StyleSheet.create({

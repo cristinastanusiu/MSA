@@ -24,4 +24,8 @@ public class EventsService {
         event.setUser(user);
         return eventsRepository.save(event);
     }
+    
+    public Collection<Event> getUserEvents(Long id){
+       return eventsRepository.findByUserId(id);
+    }
 }
