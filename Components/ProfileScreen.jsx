@@ -7,7 +7,7 @@ import {View,
     RefreshControl,
     Alert,
     TouchableOpacity} from 'react-native';
-import {ActionSheet,Root}  from 'native-base';
+import {ActionSheet}  from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as MediaLibrary from 'expo-media-library';
@@ -70,11 +70,7 @@ export default function ProfileScreen() {
     }
 
         const takePhotoFromCamera = async () => {
-        const response1 = await Permissions.askAsync(Permissions.CAMERA);
-        const response2 = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-        if (response1.granted & response2.granted) {
-            let result = await ImagePicker.launchCameraAsync({
+        let result = await ImagePicker.launchCameraAsync({
                 allowsEditing: false,
                 aspect: [4, 3],
                 maxWidth: 150,
@@ -94,7 +90,6 @@ export default function ProfileScreen() {
                     "Your profile picture has been updated successfully");
             });
             return;
-        }
         console.log('Camera or Camera Roll perimission denied!');
     };
 
@@ -120,26 +115,32 @@ export default function ProfileScreen() {
 
     };
 
-    const ClickAddImage = () =>{
-        const BUTTONS = ['Take Photo','Choose Photo Library','Cancel'];
-        ActionSheet.show(
-            {options:BUTTONS,cancelButtonIndex:2,title:'Select a Photo'},
-            (buttonIndex) => {
-                switch (buttonIndex){
-                    case 0:
-                        console.log("Clicked 0 on button Index"+ buttonIndex);
-                        takePhotoFromCamera();
-                        break;
-                    case 1:
-                        console.log("Clicked 1  on button Index"+ buttonIndex);
-                        choosePhotoFromLibrary();
-                        break;
-                    default:
-                        break;
+    const ClickAddImage = async () => {
+        const response1 = await Permissions.askAsync(Permissions.CAMERA);
+        const response2 = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
+        if (response1.granted & response2.granted) {
+
+            const BUTTONS = ['Take Photo', 'Choose Photo Library', 'Cancel'];
+            ActionSheet.show(
+                {options: BUTTONS, cancelButtonIndex: 2, title: 'Select a Photo'},
+                (buttonIndex) => {
+                    switch (buttonIndex) {
+                        case 0:
+                            console.log("Clicked 0 on button Index" + buttonIndex);
+                            takePhotoFromCamera();
+                            break;
+                        case 1:
+                            console.log("Clicked 1  on button Index" + buttonIndex);
+                            choosePhotoFromLibrary();
+                            break;
+                        default:
+                            break;
+
+                    }
                 }
-            }
-        )
+            )
+        }
     };
 
 
