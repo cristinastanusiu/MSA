@@ -4,6 +4,10 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ContactsScreen from './Components/ContactsScreen';
 import Events from './Components/EventsScreen';
+import ProfileScreen from "./Components/ProfileScreen";
+import * as firebase from "firebase";
+import ApiKeys from "./Components/constants/ApiKeys";
+import RegisterForPushNotifications from './Components/shared/Notifier'
 import {Icon} from 'react-native-elements';
 import LoginScreen from './Components/LoginScreen';
 import LogoutScreen from './Components/LogoutScreen';
@@ -12,6 +16,7 @@ import Tab1 from './Components/Tab1';
 import {Provider as AuthProvider} from './Context/AuthContext';
 import {Context as AuthContext} from './Context/AuthContext';
 import Toast from 'react-native-toast-message';
+
 
 const AuthStack = createStackNavigator();
 function authFlow() {
@@ -75,7 +80,9 @@ function homeFlow() {
 }
 
 const Stack = createStackNavigator();
-function App() {
+function App() {  
+if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.firebaseConfig)}
+    // RegisterForPushNotifications(phoneNumber);
   const {state} = React.useContext(AuthContext);
 
   return (
