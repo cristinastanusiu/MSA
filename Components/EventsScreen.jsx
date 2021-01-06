@@ -36,16 +36,16 @@ export default function Events() {
     }, []);
 
     const getEvents = () => {
-        axios.get('http://ec2-35-179-96-157.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
+        axios.get('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
             var key_cnt = 0;
             res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
             setEventList(res.data);
-            console.log(res.data);
+            // console.log(res.data);
         });
     }
 
     useEffect(() => {
-        axios.get('http://ec2-35-179-96-157.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
+        axios.get('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
             var key_cnt = 0;
             res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
             setEventList(res.data);
@@ -54,7 +54,7 @@ export default function Events() {
     },[])
 
     const addEvent = (myevent) => {
-        axios.post('http://ec2-35-179-96-157.eu-west-2.compute.amazonaws.com:8080/addEvent/0768824072',
+        axios.post('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/addEvent/0768824072',
             {
                 dateTime: "2021-01-03 14:42:51",
                 maxPers: myevent.maxPers,

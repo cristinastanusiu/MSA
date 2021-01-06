@@ -7,11 +7,13 @@ import Events from './Components/EventsScreen';
 import ProfileScreen from "./Components/ProfileScreen";
 import * as firebase from "firebase";
 import ApiKeys from "./Components/constants/ApiKeys";
+import RegisterForPushNotifications from './Components/shared/Notifier'
 
-
+const phoneNumber = "074921023"
 const App = () => {
     if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.firebaseConfig)}
 
+    // RegisterForPushNotifications(phoneNumber);
   const Tab = createMaterialTopTabNavigator();
   return (
     // <Events></Events>

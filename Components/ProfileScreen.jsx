@@ -16,6 +16,7 @@ import * as firebase from 'firebase';
 import Card from "./shared/Card";
 import {AntDesign} from "@expo/vector-icons";
 import axios from "axios";
+import registerForPushNotifications from './shared/Notifier';
 
 const imgName = "Cristina"
 
@@ -32,16 +33,11 @@ const uploadImage = async (uri,imgName) => {
     return ref.put(blob);
 }
 
-const retrieveImage = async (imgName) => {
-    const ref = firebase.storage().ref("images/" + imgName);
-    return ref.getDownloadURL();
-}
-
 export default function ProfileScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [rerun, setRerun] = useState(false);
     const [image, setImage] = useState(null);
-    const [eventsHistory, setEventsHisyory] = useState(null);
+    const [eventsHistory, setEventsHistory] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -65,15 +61,15 @@ export default function ProfileScreen() {
     }, []);
 
     const getUserEvents = () => {
-        axios.get('http://ec2-35-179-96-157.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
+        axios.get('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/getEvents/0768824072').then(res => {
             var key_cnt = 0;
             res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
-            setEventsHisyory(res.data);
-            console.log(res.data);
+            setEventsHistory(res.data);
+            console.log("Get user events : "+res.data);
         });
     }
 
-    const takePhotoFromCamera = async () => {
+        const takePhotoFromCamera = async () => {
         const response1 = await Permissions.askAsync(Permissions.CAMERA);
         const response2 = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
@@ -148,39 +144,40 @@ export default function ProfileScreen() {
 
 
     return (
-        <Root>
             <ScrollView
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }>
-                    <View style={styles.content} >
-                        {!image && <Image source={require('../assets/default.png')} style={styles.itemImage} />}
-                        {image && <Image source={{ uri: image }} style={styles.itemImage} />}
-                        <TouchableOpacity onPress={ClickAddImage} style = {styles.btnAddImage}>
-                            <Text style = {styles.txtBtn}>Edit Profile Picture</Text>
-                        </TouchableOpacity>
-                    </View>
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }>
+            <View style={styles.content} >
+                    {!image && <Image source={require('../assets/default.png')} style={styles.itemImage} />}
+                    {image && <Image source={{ uri: image }} style={styles.itemImage} />}
+                    <TouchableOpacity onPress={ClickAddImage} style = {styles.btnAddImage}>
+                        <Text style = {styles.txtBtn}>Edit Profile Picture</Text>
+                    </TouchableOpacity>
+                </View>
 
-                    {eventsHistory.map(item => (
-                        <Card>
-                            <Text style={styles.host}> to do </Text>
-                            <Text style={styles.title}>
-                                {item.title} {item.place}
-                            </Text>
-                            <Text style={styles.datetime}>{item.datetime}</Text>
-                            <Text style={styles.available}>Availability: to do/{item.maxPers}</Text>
-                        </Card>)
-                    )}
-                <TouchableOpacity onPress={() => console.log('Successfully LOGGED OUT!')} style={styles.logoutBtn}>
-                    <AntDesign name="logout" size={30} color="black" />
-                </TouchableOpacity>
-                </ScrollView>
-            </Root>
-
+                        {eventsHistory.map(item => (
+                            <Card>
+                                <Text style={styles.title}>
+                                    {item.title} {item.place}
+                                </Text>
+                                <Text style={styles.datetime}>{item.datetime}</Text>
+                                <Text style={styles.available}>Availability: to do/{item.maxPers}</Text>
+                            </Card>)
+                        )}
+                    <TouchableOpacity onPress={() => console.log('Successfully LOGGED OUT!')} style={styles.logoutBtn}>
+                        <AntDesign name="logout" size={30} color="black" />
+                    </TouchableOpacity>
+                    </ScrollView>
 );
 }
 
 //get image from firebase
+
+// const retrieveImage = async (imgName) => {
+//     const ref = firebase.storage().ref("images/" + imgName);
+//     return ref.getDownloadURL();
+// }
 // const [retrImage, setRetrImage] = useState(null);
 //
 // retrieveImage(imgName)
@@ -194,6 +191,12 @@ export default function ProfileScreen() {
 
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingTop: 50,
+        paddingHorizontal: 20
+    },
     content: {
         flex: 1,
         alignItems:'center',
