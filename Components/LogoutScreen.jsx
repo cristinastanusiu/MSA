@@ -1,15 +1,16 @@
-
+//trebuie integrata in profile screen (buton de logout)
 import React, {useContext} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
+import {Button} from 'react-native-elements';
 import {Context as AuthContext} from '../Context/AuthContext';
 
-const Tab1 = ({navigation}) => {
-  const {state} = useContext(AuthContext);
+const LogoutScreen = ({navigation}) => {
+  const {state, signout} = useContext(AuthContext);
 
   return (
     <View style={styles.master}>
-      <Text style={styles.header}>Tab1</Text>
-      <Text style={{fontSize: 28}}>Welcome, {state.email}</Text>
+      <Text style={styles.header}>User Profile</Text>
+      <Button onPress={signout} title="Ready to Sign out?" type="clear" />
     </View>
   );
 };
@@ -22,7 +23,8 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 32,
+    marginBottom: 8,
   },
 });
 
-export default Tab1;
+export default LogoutScreen;

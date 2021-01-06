@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {Icon} from 'react-native-elements';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Input, Button} from 'react-native-elements';
-import {Context as AuthContext} from '../Context/AuthContext.js';
+import {Context as AuthContext} from '../Context/AuthContext';
 
 const LoginScreen = ({navigation}) => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -11,7 +11,7 @@ const LoginScreen = ({navigation}) => {
 
   return (
     <View style={styles.master}>
-      <Text style={styles.header}>Eventsy</Text>
+      <Text style={styles.header}>Eventsy | Login</Text>
       <Input
         placeholder="Phone Number"
         onChangeText={setPhoneNumber}
@@ -33,8 +33,8 @@ const LoginScreen = ({navigation}) => {
         }}
       />
       <View style={styles.link}>
-        <Text style={styles.text}>Dont have an account? </Text>
-        <TouchableOpacity onPress={() => {}}>
+        <Text style={styles.text}>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => {navigation.navigate('Register')}}>
           <Text style={styles.text}>Sign up here.</Text>
         </TouchableOpacity>
       </View>

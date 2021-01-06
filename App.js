@@ -1,5 +1,4 @@
-import React from 'react';
-//import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useState, useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -8,11 +7,12 @@ import Events from './Components/EventsScreen';
 import {Icon} from 'react-native-elements';
 import LoginScreen from './Components/LoginScreen';
 import LogoutScreen from './Components/LogoutScreen';
+import RegisterScreen from './Components/RegisterScreen';
 import Tab1 from './Components/Tab1';
-import {Provider as AuthProvider} from './Context/AuthContext.js';
-import {Context as AuthContext} from './Context/AuthContext.js';
-// import ProfileScreen from "./Components/ProfileScreen";
-//
+import {Provider as AuthProvider} from './Context/AuthContext';
+import {Context as AuthContext} from './Context/AuthContext';
+import Toast from 'react-native-toast-message';
+
 const AuthStack = createStackNavigator();
 function authFlow() {
   return (
@@ -24,8 +24,8 @@ function authFlow() {
       />
       <AuthStack.Screen
         options={{headerShown: false}}
-        name="Signup"
-        component={LoginScreen}
+        name="Register"
+        component={RegisterScreen}
       />
     </AuthStack.Navigator>
   );
@@ -77,11 +77,18 @@ function homeFlow() {
 const Stack = createStackNavigator();
 function App() {
   const {state} = React.useContext(AuthContext);
-  console.log(state);
+
   return (
+    <>
     <NavigationContainer>
       <Stack.Navigator>
-        {state.token === null ? (
+        {state.token == '200' ? (
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Home"
+            component={homeFlow}
+          />
+        ): (
           <>
             <Stack.Screen
               options={{headerShown: false}}
@@ -89,15 +96,11 @@ function App() {
               component={authFlow}
             />
           </>
-        ) : (
-          <Stack.Screen
-            options={{headerShown: false}}
-            name="Home"
-            component={homeFlow}
-          />
         )}
       </Stack.Navigator>
     </NavigationContainer>
+    <Toast ref={(ref) => Toast.setRef(ref)} />
+    </>
   );
 }
 

@@ -29,4 +29,14 @@ public class UsersService {
     public User addUser(User user){
         return usersRepository.save(user);
     }
+
+    public String loginUser(String phoneNumber, String password){
+        Optional<User> user = this.getUser(phoneNumber);
+        if(!user.isPresent())
+            return "0";
+        User existingUser = user.get();
+        if (!existingUser.getPassword().equals(password))
+            return "-1";
+        return "1";
+    }
 }

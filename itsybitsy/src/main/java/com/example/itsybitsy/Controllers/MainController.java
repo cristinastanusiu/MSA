@@ -3,6 +3,7 @@ package com.example.itsybitsy.Controllers;
 import com.example.itsybitsy.DbModels.*;
 import com.example.itsybitsy.Services.EventsService;
 import com.example.itsybitsy.Services.UsersService;
+import com.example.itsybitsy.utils.LoginCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,19 @@ public class MainController {
     @ResponseBody
     public ResponseEntity<Collection<Event>> getMyContactsEvents(){
         return new ResponseEntity<>(eventsService.getMyContactsEvents(), HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginCredentials loginCredentials){
+        String response = usersService.loginUser(loginCredentials.phoneNumber, loginCredentials.password);
+        switch(response){
+            case "-1":
+                return new ResponseEntity<>("Incorrect password. Try again!", HttpStatus.UNAUTHORIZED);
+            case "0":
+                return new ResponseEntity<>("Phone number not registered. Signup!", HttpStatus.NOT_FOUND);
+            default:
+                return new ResponseEntity<>("Successfully logged in.", HttpStatus.OK);
+        }
     }
 
     @GetMapping("/getUsers")
@@ -54,7 +68,8 @@ public class MainController {
 
     @PostMapping("/addUser")
     public ResponseEntity<String> addUser(@RequestBody User user){
-        return new ResponseEntity<>(usersService.addUser(user).toString() + " was added!", HttpStatus.CREATED);
+        User savedUser = usersService.addUser(user);
+        return new ResponseEntity<>(savedUser.getFirstName() + " " + savedUser.getLastName() + " succesfully registered!", HttpStatus.CREATED);
     }
 
 }
