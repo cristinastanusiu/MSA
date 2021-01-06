@@ -72,4 +72,10 @@ public class MainController {
         return new ResponseEntity<>(savedUser.getFirstName() + " " + savedUser.getLastName() + " succesfully registered!", HttpStatus.CREATED);
     }
 
+    @GetMapping("/getEvents/{phoneNumber}")
+    public ResponseEntity<Collection<Event>> getUserEvents(@PathVariable (value = "phoneNumber") String phoneNumber){
+        Collection<Event> events = eventsService.getUserEvents(usersService.getUserId(phoneNumber));
+        return new ResponseEntity<>(events, HttpStatus.OK);
+    }
+
 }

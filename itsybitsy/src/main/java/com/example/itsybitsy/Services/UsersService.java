@@ -39,4 +39,13 @@ public class UsersService {
             return "-1";
         return "1";
     }
+
+    public Long getUserId(String phoneNumber){
+        Optional<User> user = usersRepository.findByPhoneNumber(phoneNumber);
+        Long id=0L;
+        if(user.isPresent()){
+            id = user.get().getId();
+        }
+        return id;
+    }
 }
