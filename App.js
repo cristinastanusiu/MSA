@@ -74,13 +74,13 @@ function homeFlow() {
       initialRouteName="Events">
       <Tab.Screen name="Contacts" component={ContactsScreen} />
       <Tab.Screen name="Events" component={LogoutScreen} />
-      <Tab.Screen name="Profile" component={LogoutScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
 
 const Stack = createStackNavigator();
-function App() {  
+function App() {
 if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.firebaseConfig)}
     // RegisterForPushNotifications(phoneNumber);
   const {state} = React.useContext(AuthContext);
