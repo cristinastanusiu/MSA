@@ -73,7 +73,7 @@ function homeFlow() {
       }}
       initialRouteName="Events">
       <Tab.Screen name="Contacts" component={ContactsScreen} />
-      <Tab.Screen name="Events" component={LogoutScreen} />
+      <Tab.Screen name="Events" component={Events} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

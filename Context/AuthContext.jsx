@@ -119,6 +119,10 @@ const signin = dispatch => {
 
 const signout = dispatch => {
   return () => {
+    Toast.show({
+    text1: 'Goodbye!',
+    text2: 'Hope to see you soon...' +'🥺'
+  });
     dispatch({type: 'signout'});
   };
 };

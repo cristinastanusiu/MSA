@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     StyleSheet,
     Text,
@@ -15,6 +15,8 @@ import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddEventForm from './AddEventForm';
 import axios from 'axios';
+import {Context as AuthContext} from '../Context/AuthContext';
+import Toast from 'react-native-toast-message';
 
 const wait = (timeout) => {
   return new Promise(resolve => {
@@ -27,6 +29,7 @@ export default function Events() {
   const [refreshing, setRefreshing] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [eventList, setEventList] = useState([]);
+  const {state} = useContext(AuthContext);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -48,15 +51,27 @@ export default function Events() {
       },[])
 
   const addEvent = (myevent) => {
-      axios.post('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/addEvent/111',
+      axios.post('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/addEvent/' + state.phoneNumber,
       {
         dateTime: "2021-01-03 14:42:51",
         maxPers: myevent.maxPers,
+        currentPers: myevent.currentPers,
         place: myevent.place,
         title: myevent.title
       }).then(res => console.log(res));
       setModalOpen(false);
     }
+
+  const joinEvent = (myevent) => {
+    axios.put('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/joinEvent/'+ myevent.phone,
+    {
+      dateTime: "2021-01-03 14:42:51",
+      maxPers: myevent.maxPers,
+      currentPers:  myevent.currentPers + 1,
+      place: myevent.place,
+      title: myevent.title
+    }).then(res => console.log(res));;
+  }
 
   return (
   <View style={styles.container}>
@@ -74,17 +89,25 @@ export default function Events() {
     </Modal>
     <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       {eventList.map(item => (
-        <Card>
-          <Text style={styles.host}> to do </Text>
+        <Card key={item.key}>
+          <Text style={styles.host}> {item.hostName} </Text>
           <Image style={styles.userImage} source={require('../assets/default.png')}/>
           <Text style={styles.title}>
           {item.title} {item.place}
           </Text>
           <Text style={styles.datetime}>{item.datetime}</Text>
-          <Text style={styles.available}>Availability: to do/{item.maxPers}</Text>
-          <TouchableOpacity onPress={() => console.log('Successfully joined event!')} style={styles.joinButton}>
+          <Text style={styles.available}>{item.currentPers}/{item.maxPers} joined</Text>
+          { item.currentPers < item.maxPers &&
+          <TouchableOpacity onPress={() => {
+            joinEvent(item);
+            Toast.show({
+            text1: 'Great!',
+            text2: 'You joined the party.' +'🍷'
+          });}
+          } style={styles.joinButton}>
             <AntDesign name="adduser" size={30} color="black" />
           </TouchableOpacity>
+        }
        </Card>)
       )
     }

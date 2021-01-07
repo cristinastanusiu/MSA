@@ -78,4 +78,13 @@ public class MainController {
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
+    @PutMapping("/joinEvent/{phoneNumber}")
+    @ResponseBody
+    public ResponseEntity<String> joinEvent(@PathVariable (value = "phoneNumber") String phoneNumber, @RequestBody Event event){
+        Optional<User> user = usersService.getUser(phoneNumber);
+        if(!user.isPresent())
+            return new ResponseEntity<>( "User not found.",HttpStatus.NOT_FOUND);
+        Event modifiedEvent = eventsService.joinEvent(event, user.get());
+        return new ResponseEntity<>( modifiedEvent.getTitle() + " was modified.",HttpStatus.OK);
+    }
 }

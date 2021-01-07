@@ -19,7 +19,7 @@ import {AntDesign} from "@expo/vector-icons";
 import axios from "axios";
 import {Context as AuthContext} from "../Context/AuthContext";
 import RegisterForPushNotifications from "./shared/Notifier";
-
+import Toast from 'react-native-toast-message';
 
 const wait = (timeout) => {
     return new Promise(resolve => {
@@ -39,7 +39,7 @@ export default function ProfileScreen() {
     const [rerun, setRerun] = useState(false);
     const [image, setImage] = useState(null);
     const [eventsHistory, setEventsHistory] = useState([]);
-    const {state} = useContext(AuthContext);
+    const {state, signout} = useContext(AuthContext);
 
     const phoneNumber = state.phoneNumber;
 
@@ -176,18 +176,12 @@ export default function ProfileScreen() {
 
                             <Text style={styles2.datetime}>{item.dateTime}</Text>
                             <Text style={styles2.available}>
-                                Av: 0/{item.maxPers}</Text>
-
-                            <TouchableOpacity onPress={async () => {
-                                await RegisterForPushNotifications()}} style={styles2.joinButton}>
-                                <Ionicons name="ios-happy-outline" size={24} color="black" />
-
-                            </TouchableOpacity>
+                                Av: {item.currentPers}/{item.maxPers}</Text>
                         </Card>)
                         )}
                 </View>
 
-                <TouchableOpacity onPress={() => Alert.alert('Successfully logged out!')} style={styles.logoutBtn}>
+                <TouchableOpacity onPress={signout} style={styles.logoutBtn}>
                     <AntDesign name="logout" size={30} color="black" />
                 </TouchableOpacity>
                     </ScrollView>
@@ -202,7 +196,8 @@ const styles = StyleSheet.create({
         marginTop: 60,
     },
     btnAddImage: {
-        marginTop:10,
+        marginTop:5,
+        marginBottom:10,
         backgroundColor: "#8C625E",
         height:50,
         width: 180,
@@ -266,7 +261,7 @@ const styles2 = StyleSheet.create({
         color: '#8C625E',
         fontSize: 17,
         left: 20,
-        marginTop:-10,
+        marginTop:0,
     },
     joinButton: {
         width: 50,
@@ -307,4 +302,3 @@ const styles2 = StyleSheet.create({
 //     .catch((err) => {
 //         console.log("File" +imgName+ " not found in firebase " +err );
 //     });
-

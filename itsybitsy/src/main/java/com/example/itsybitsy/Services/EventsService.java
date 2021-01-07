@@ -22,10 +22,21 @@ public class EventsService {
 
     public Event addEvent(Event event, User user){
         event.setUser(user);
+        event.setPhone(user.getPhoneNumber());
+        event.setHostName(user.getFirstName() + " " + user.getLastName());
         return eventsRepository.save(event);
     }
     
     public Collection<Event> getUserEvents(Long id){
        return eventsRepository.findByUserId(id);
+    }
+
+    public Event joinEvent(Event event, User user) {
+        event.setUser(user);
+        event.setPhone(user.getPhoneNumber());
+        event.setHostName(user.getFirstName() + " " + user.getLastName());
+        event.setId()
+        event.setCurrentPers(event.getCurrentPers() + 1);
+        return eventsRepository.save(event);
     }
 }
