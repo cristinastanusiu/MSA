@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import {
   StyleSheet,
   Text,
   View,
@@ -41,7 +41,7 @@ export default class ContactsScreen extends React.Component {
     this.setState({isLoading:true});
     this.loadContacts();
   }
-  
+
   renderItem = ({item}) => (
     <View style={{minHeight:70,padding:5}}>
         <Text style={{color:'#888',fontWeight:'bold',fontSize:26}}>
@@ -69,9 +69,9 @@ export default class ContactsScreen extends React.Component {
   render(){
   return (
     <View style={{flex:1}}>
-      <SafeAreaView style={{backgroundColor:'#2f363c'}} />
-        <TextInput placeholder="Search" placeholderTextColor='#dddddd' 
-              style={{backgroundColor:'#2f363c',
+      <SafeAreaView style={{backgroundColor:'#F2E0D5'}} />
+        <TextInput placeholder="Search" placeholderTextColor='#dddddd'
+              style={{backgroundColor:'#8C625E',
               height :50,
               fontSize:36,
               padding:10,
@@ -80,7 +80,7 @@ export default class ContactsScreen extends React.Component {
               borderBottomColor:'#7d90a0'
               }}
               onChangeText={(value) => this.searchContacts(value)}/>
-    <View style={{flex:1,backgroundColor:'#2f363c'}}>
+    <View style={{flex:1,backgroundColor:'#F2E0D5'}}>
       {this.state.isLoading ? (
       <View style={{...StyleSheet.absoluteFill,
             alignItems:'center',
@@ -105,7 +105,7 @@ export default class ContactsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F2E0D5',
     alignItems: 'center',
     justifyContent: 'center',
   }

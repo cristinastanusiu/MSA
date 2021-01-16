@@ -29,7 +29,7 @@ const signup = dispatch => {
     let token='';
     let message='';
 
-    axios.post('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/addUser',
+    axios.post('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/addUser',
     {
       phoneNumber: phoneNumber,
       firstName: firstName,
@@ -76,7 +76,7 @@ const signin = dispatch => {
     let token='';
     let message='';
 
-    axios.post('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/login',
+    axios.post('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/login',
     {
       phoneNumber: phoneNumber,
       password: password

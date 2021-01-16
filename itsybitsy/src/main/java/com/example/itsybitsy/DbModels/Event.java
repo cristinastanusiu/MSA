@@ -22,7 +22,6 @@ public class Event {
     private User user;
     private String title;
     private String place;
-    @JsonIgnore
     private String phone;
     @JsonIgnore
     private String hostName;

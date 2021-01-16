@@ -68,7 +68,7 @@ export default function ProfileScreen() {
 
 
     const getUserEvents = (phoneNumber) => {
-        axios.get('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/getEvents/' + phoneNumber).then(res => {
+        axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents/' + phoneNumber).then(res => {
             var key_cnt = 0;
             res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
             setEventsHistory(res.data);

@@ -38,7 +38,7 @@ export default function Events() {
   }, []);
 
   const getEvents = () => {
-    axios.get('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
+    axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
       var key_cnt = 0;
       res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
       setEventList(res.data);
@@ -51,7 +51,7 @@ export default function Events() {
       },[])
 
   const addEvent = (myevent) => {
-      axios.post('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/addEvent/' + state.phoneNumber,
+      axios.post('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/addEvent/' + state.phoneNumber,
       {
         dateTime: "2021-01-03 14:42:51",
         maxPers: myevent.maxPers,
@@ -63,14 +63,15 @@ export default function Events() {
     }
 
   const joinEvent = (myevent) => {
-    axios.put('http://ec2-18-132-199-150.eu-west-2.compute.amazonaws.com:8080/joinEvent/'+ myevent.phone,
+    axios.put('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/joinEvent/'+ myevent.phone,
     {
+      id: myevent.id,
       dateTime: "2021-01-03 14:42:51",
       maxPers: myevent.maxPers,
       currentPers:  myevent.currentPers + 1,
       place: myevent.place,
       title: myevent.title
-    }).then(res => console.log(res));;
+    }).then(res => console.log(res));
   }
 
   return (
