@@ -35,8 +35,6 @@ public class EventsService {
         event.setUser(user);
         event.setPhone(user.getPhoneNumber());
         event.setHostName(user.getFirstName() + " " + user.getLastName());
-        event.setId()
-        event.setCurrentPers(event.getCurrentPers() + 1);
         return eventsRepository.save(event);
     }
 }

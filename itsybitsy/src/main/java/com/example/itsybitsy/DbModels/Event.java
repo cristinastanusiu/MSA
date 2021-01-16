@@ -15,7 +15,6 @@ import java.util.Objects;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -23,7 +22,9 @@ public class Event {
     private User user;
     private String title;
     private String place;
+    @JsonIgnore
     private String phone;
+    @JsonIgnore
     private String hostName;
     private int maxPers;
     private int currentPers;
