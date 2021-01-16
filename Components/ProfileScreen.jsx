@@ -17,8 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Card from "./shared/Card";
 import {AntDesign} from "@expo/vector-icons";
 import axios from "axios";
-import {Context as AuthContext} from "../Context/AuthContext";
-import RegisterForPushNotifications from "./shared/Notifier";
+// import {Context as AuthContext} from "../Context/AuthContext";
 import Toast from 'react-native-toast-message';
 
 const wait = (timeout) => {
