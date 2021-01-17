@@ -60,7 +60,7 @@ export default function AddEventForm({ addEvent }) {
                             <DateTimePicker
                                 isVisible={isVisible}
                                 onConfirm={(datetime) => {
-                                    setChosenDate(moment(datetime).format("HH:mm, Do MMM"));
+                                    setChosenDate(moment(datetime).format('yyyy-MM-DD HH:mm:ss'));
                                     setPickerOpen(false);
                                 }}
                                 onCancel={() => {

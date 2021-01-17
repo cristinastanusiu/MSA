@@ -73,7 +73,8 @@ export default function Events() {
   const addEvent = (myevent) => {
       axios.post('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/addEvent/' + state.phoneNumber,
       {
-        dateTime: "2021-01-03 14:42:51",
+        dateTime: myevent.datetime,
+        // dateTime: "2021-01-03 14:42:51",
         maxPers: myevent.maxPers,
         currentPers: myevent.currentPers,
         place: myevent.place,
