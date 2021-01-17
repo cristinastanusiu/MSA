@@ -47,14 +47,14 @@ export default function Events() {
     axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
       var key_cnt = 0;
        res.data.map(e => {
-        e.key = key_cnt; 
+        e.key = key_cnt;
         key_cnt = key_cnt + 1;
          retrieveImage(e.phone)
         .then( url => {
             console.log("URL is " + url);
             e.img = url;
             setEventList(res.data);
-            console.log(res.data);  
+            console.log(res.data);
 
         })
         .catch(() => {
@@ -62,11 +62,11 @@ export default function Events() {
           console.log("img not found");
         });
       });
-     
+
     })
   }
 
-  useEffect(() => { 
+  useEffect(() => {
         getEvents();
       },[])
 
@@ -84,7 +84,7 @@ export default function Events() {
     }
 
   const joinEvent = async (myevent) => {
-     axios.put('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/joinEvent/'+ myevent.phone,
+     axios.put('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/joinEvent/'+ myevent.phone + '?participantPhoneNumber=' + state.phoneNumber,
     {
       id: myevent.id,
       dateTime: "2021-01-03 14:42:51",
@@ -137,7 +137,7 @@ export default function Events() {
           } style={styles.joinButton}>
             <AntDesign name="adduser" size={30} color="black" />
           </TouchableOpacity>
-        }  
+        }
 
        </Card>)
       )
