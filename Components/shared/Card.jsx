@@ -13,9 +13,9 @@ export default function Card(props){
 
 const styles = StyleSheet.create({
     card:{
-        borderRadius:6,
+        borderRadius:30,
         elevation:5,
-        backgroundColor:'#D9C6BF',
+        backgroundColor:'#FEF8EF',
         shadowOffset:{width:1, height:1},
         shadowColor:"#F2E0D5",
         shadowOpacity:0.5,
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     },
     cardContent:{
         marginHorizontal:10,
-        marginVertical:10,
-        marginTop:40
+        marginVertical:30,
+        marginTop:50
     }
 });

@@ -67,7 +67,7 @@ function homeFlow() {
         },
       })}
       tabBarOptions={{
-        activeTintColor: 'tomato',
+        activeTintColor: '#5E8C7F',
         inactiveTintColor: 'gray',
       }}
       initialRouteName="Events">
