@@ -4,6 +4,8 @@ package com.example.itsybitsy.DbModels;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.*;
+
 
 @Entity(name = "User")
 @Table(name = "users", schema = "msa")
@@ -16,18 +18,12 @@ public class User {
     private String lastName;
     private String password;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "participants")
+    private Set<Event> joinedEvents = new HashSet<>();
+
     @Column(unique = true)
     private String phoneNumber;
-
-    protected User(){}
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public Long getId() {
         return id;
@@ -53,11 +49,30 @@ public class User {
         this.lastName = lastName;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Event> getJoinedEvents() {
+        return joinedEvents;
+    }
+
+    public void setJoinedEvents(Set<Event> joinedEvents) {
+        this.joinedEvents = joinedEvents;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public User() {
     }
 }
