@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Card from "./shared/Card";
 import {AntDesign} from "@expo/vector-icons";
 import axios from "axios";
-// import {Context as AuthContext} from "../Context/AuthContext";
+import {Context as AuthContext} from "../Context/AuthContext";
 import Toast from 'react-native-toast-message';
 
 const wait = (timeout) => {
@@ -42,6 +42,11 @@ export default function ProfileScreen() {
 
     const phoneNumber = state.phoneNumber;
 
+    const retrieveImage = async (imgName) => {
+        const ref = await firebase.storage().ref("images/" + imgName);
+        return  ref.getDownloadURL();
+        }
+    
     useEffect(() => {
         (async () => {
             if (Platform.OS !== 'web') {
@@ -52,12 +57,24 @@ export default function ProfileScreen() {
 
             }
             getUserEvents(phoneNumber);
+            retrieveImage(phoneNumber)
+                .then( url => {
+                    setImage(url);
+                    console.log("Profile screen1 url : " + url);
+                });  
         })();
     }, []);
 
+    
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         getUserEvents(phoneNumber);
+        retrieveImage(phoneNumber)
+        .then( url => {
+            setImage(url);
+            console.log("Profile screen2 url : " + url);
+
+        });  
         wait(2000).then(() => setRefreshing(false));
         if(rerun == false)
             setRerun(true);
@@ -74,7 +91,6 @@ export default function ProfileScreen() {
             console.log("Get user events : "+res.data);
         });
     }
-
         const takePhotoFromCamera = async () => {
         let result = await ImagePicker.launchCameraAsync({
                 allowsEditing: false,

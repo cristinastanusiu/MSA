@@ -17,6 +17,7 @@ import AddEventForm from './AddEventForm';
 import axios from 'axios';
 import {Context as AuthContext} from '../Context/AuthContext';
 import Toast from 'react-native-toast-message';
+import * as firebase from 'firebase';
 
 const wait = (timeout) => {
   return new Promise(resolve => {
@@ -33,20 +34,39 @@ export default function Events() {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getEvents();
+     getEvents();
     wait(2000).then(() => setRefreshing(false));
   }, []);
+
+  const retrieveImage = async (imgName) => {
+    const ref = await firebase.storage().ref("images/" + imgName);
+    return  ref.getDownloadURL();
+      }
 
   const getEvents = () => {
     axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
       var key_cnt = 0;
-      res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
-      setEventList(res.data);
-      console.log(res.data);
-    });
+       res.data.map(e => {
+        e.key = key_cnt; 
+        key_cnt = key_cnt + 1;
+         retrieveImage(e.phone)
+        .then( url => {
+            console.log("URL is " + url);
+            e.img = url;
+            setEventList(res.data);
+            console.log(res.data);  
+
+        })
+        .catch(() => {
+          e.img = '';
+          console.log("img not found");
+        });
+      });
+     
+    })
   }
 
-  useEffect(() => {
+  useEffect(() => { 
         getEvents();
       },[])
 
@@ -62,8 +82,8 @@ export default function Events() {
       setModalOpen(false);
     }
 
-  const joinEvent = (myevent) => {
-    axios.put('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/joinEvent/'+ myevent.phone,
+  const joinEvent = async (myevent) => {
+     axios.put('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/joinEvent/'+ myevent.phone,
     {
       id: myevent.id,
       dateTime: "2021-01-03 14:42:51",
@@ -73,6 +93,7 @@ export default function Events() {
       title: myevent.title
     }).then(res => console.log(res));
   }
+
 
   return (
   <View style={styles.container}>
@@ -90,14 +111,21 @@ export default function Events() {
     </Modal>
     <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       {eventList.map(item => (
+
         <Card key={item.key}>
-          <Text style={styles.host}> {item.hostName} </Text>
-          <Image style={styles.userImage} source={require('../assets/default.png')}/>
-          <Text style={styles.title}>
-          {item.title} {item.place}
-          </Text>
-          <Text style={styles.datetime}>{item.datetime}</Text>
+
+          <View>
+              {!item.img && <Image source={require('../assets/default.png')} style={styles.userImage} />}
+              {item.img && <Image source={{ uri: item.img }} style={styles.userImage} />}
+          </View>
+          {/* TO DO - hostName from contact list */}
+          <Text style={styles.host}> {item.phone} </Text>
+
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.place}>{item.place}</Text>
+          <Text style={styles.datetime}>{item.dateTime}</Text>
           <Text style={styles.available}>{item.currentPers}/{item.maxPers} joined</Text>
+
           { item.currentPers < item.maxPers &&
           <TouchableOpacity onPress={() => {
             joinEvent(item);
@@ -108,7 +136,8 @@ export default function Events() {
           } style={styles.joinButton}>
             <AntDesign name="adduser" size={30} color="black" />
           </TouchableOpacity>
-        }
+        }  
+
        </Card>)
       )
     }
@@ -133,35 +162,46 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         color: '#8C625E',
-        paddingLeft: 90,
+        paddingLeft: 80,
         position: 'absolute',
+        marginTop:-35,
     },
+    place: {
+      fontSize: 15,
+      color: '#8C625E',
+      paddingLeft: 80,
+      position: 'absolute',
+      marginTop:-7,
+  },
     userImage: {
         flex: 1,
         width: 70,
         height: 70,
-        borderRadius: 30,
+        marginTop:-20,
+        borderRadius:15,
     },
     host: {
-        fontSize: 20,
+        fontSize: 17,
         color: '#8C625E',
         position: 'absolute',
-        left: 15,
-        top: -28
+        left: -5,
+        top: -44
     },
     datetime: {
         color: '#8C625E',
-        fontSize: 17,
+        fontSize: 12,
+        paddingLeft: 80,
         position: 'absolute',
-        left: 90,
-        top: 22
+        marginTop:12,
+        top:3,
     },
     available: {
         color: '#8C625E',
-        fontSize: 17,
+        fontSize: 10,
         position: 'absolute',
-        left: 90,
-        top: 40
+        paddingLeft:80,
+        marginTop:10,
+        top: 20
     },
     joinButton: {
         width: 70,
@@ -169,7 +209,9 @@ const styles = StyleSheet.create({
         color: '#8C625E',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 10,
+        paddingTop: 5,
+        marginTop:-24,
+        marginLeft:10,
         borderRadius: 100,
         backgroundColor: '#F2E0D5',
         alignSelf: 'flex-end',
