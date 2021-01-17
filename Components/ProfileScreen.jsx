@@ -6,6 +6,7 @@ import {View,
     ScrollView,
     RefreshControl,
     Alert,
+    Button,
     TouchableOpacity} from 'react-native';
 import {ActionSheet,Root}  from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
@@ -46,7 +47,7 @@ export default function ProfileScreen() {
         const ref = await firebase.storage().ref("images/" + imgName);
         return  ref.getDownloadURL();
         }
-    
+
     useEffect(() => {
         (async () => {
             if (Platform.OS !== 'web') {
@@ -61,11 +62,11 @@ export default function ProfileScreen() {
                 .then( url => {
                     setImage(url);
                     console.log("Profile screen1 url : " + url);
-                });  
+                });
         })();
     }, []);
 
-    
+
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         getUserEvents(phoneNumber);
@@ -74,7 +75,7 @@ export default function ProfileScreen() {
             setImage(url);
             console.log("Profile screen2 url : " + url);
 
-        });  
+        });
         wait(2000).then(() => setRefreshing(false));
         if(rerun == false)
             setRerun(true);
@@ -82,12 +83,27 @@ export default function ProfileScreen() {
             setRerun(false);
     }, []);
 
+    const getParticipants =  (event) => {
+      const res = axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
+      .then((res) => res.data);
+      return res;
+    }
 
     const getUserEvents = (phoneNumber) => {
-        axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents/' + phoneNumber).then(res => {
+        axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents/' + phoneNumber)
+        .then(res => {
             var key_cnt = 0;
-            res.data.map(e => {e.key = key_cnt; key_cnt = key_cnt + 1;})
-            setEventsHistory(res.data);
+            res.data.map(e => {
+              e.key = key_cnt; key_cnt = key_cnt + 1;
+              getParticipants(e)
+              .then((rest)=>{
+                console.log("rest")
+                e.participants = rest;
+                console.log(res.data)
+              })
+setEventsHistory(res.data);
+            })
+
             console.log("Get user events : "+res.data);
         });
     }
@@ -184,10 +200,18 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles2.container}>
                 {eventsHistory.map(item => (
+
                         <Card  key={item.key}>
+                        <View style={styles2.container}>
+                          {item.participants.map(p =>
                             <Text style={styles2.title}>
-                                {item.title} {item.place}
-                            </Text>
+                              {p.firstName}
+                          </Text>)}
+                        </View>
+
+                            // <Text style={styles2.title}>
+                            //     {item.title} {item.place}
+                            // </Text>
 
                             <Text style={styles2.datetime}>{item.dateTime}</Text>
                             <Text style={styles2.available}>
