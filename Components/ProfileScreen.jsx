@@ -183,6 +183,7 @@ export default function ProfileScreen() {
                 <View>
                 </View>
                 <View style={styles2.container}>
+                
                 {eventsHistory.map(item => (
                         <Card  key={item.key}>
                             <Text style={styles2.title}>
