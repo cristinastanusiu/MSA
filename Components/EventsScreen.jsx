@@ -18,6 +18,8 @@ import axios from 'axios';
 import {Context as AuthContext} from '../Context/AuthContext';
 import Toast from 'react-native-toast-message';
 import * as firebase from 'firebase';
+import {Context as ContactsContext} from '../Context/ContactsContext';
+
 
 const wait = (timeout) => {
   return new Promise(resolve => {
@@ -31,6 +33,7 @@ export default function Events() {
   const [modalOpen, setModalOpen] = useState(false);
   const [eventList, setEventList] = useState([]);
   const {state} = useContext(AuthContext);
+  const {state: cstate} = useContext(ContactsContext);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -51,10 +54,10 @@ export default function Events() {
         key_cnt = key_cnt + 1;
          retrieveImage(e.phone)
         .then( url => {
-            console.log("URL is " + url);
+            // console.log("URL is " + url);
             e.img = url;
             setEventList(res.data);
-            console.log(res.data);
+            // console.log(res.data);
 
         })
         .catch(() => {
@@ -64,6 +67,7 @@ export default function Events() {
       });
 
     })
+    console.log(cstate)
   }
 
   useEffect(() => {

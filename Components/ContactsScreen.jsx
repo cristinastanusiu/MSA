@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
+import {Context as ContactsContext} from '../Context/ContactsContext';
 
 export default function ContactsScreen () {
   const [isLoading, setIsLoading] = useState(false);
   const [contacts, setContacts] = useState([]);
+  const {agendaState, updateState} = useContext(ContactsContext);
 
   const loadContacts = async () => {
     setIsLoading(true);
@@ -26,11 +28,15 @@ export default function ContactsScreen () {
     }
 
     const {data} = await Contacts.getContactsAsync({
-      fields:[Contacts.Fields.PhoneNumbers,
-        Contacts.Fields.Emails ]
+      fields:[Contacts.Fields.PhoneNumbers]
     });
     setIsLoading(false);
     setContacts(data);
+    const agenda = data.map(contact => ({
+      phone: contact.phoneNumbers[0].number,
+      name: contact.name}))
+    updateState({agenda})
+    console.log(agenda)
   };
 
   useEffect(()=>{
@@ -42,9 +48,9 @@ export default function ContactsScreen () {
         <Text style={{color:'#3C3C3A',fontWeight:'bold',fontSize:20}}>
           {item.firstName+" "}{item.lastName}
         </Text>
-        <Text style={{color:'white',fontWeight:'bold'}}>
-          {item.phoneNumbers && item.phoneNumbers[0] && item.phoneNumbers[0].digits ?
-          (item.phoneNumbers[0].digits):null
+        <Text style={{color:'#3C3C3A'}}>
+          {item.phoneNumbers && item.phoneNumbers[0] ?
+          (item.phoneNumbers[0].number):null
           }
         </Text>
     </View>
