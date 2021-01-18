@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,17 +10,15 @@ import {
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
+import {Context as ContactsContext} from '../Context/ContactsContext';
 
-export default class ContactsScreen extends React.Component {
-  constructor(){
-    super();
-    this.state={
-      isLoading:false,
-      contacts:[]
-    };
-  }
+export default function ContactsScreen () {
+  const [isLoading, setIsLoading] = useState(false);
+  const [contacts, setContacts] = useState([]);
+  const {agendaState, updateState} = useContext(ContactsContext);
 
-  loadContacts = async () => {
+  const loadContacts = async () => {
+    setIsLoading(true);
     const permisson = await Permissions.askAsync(
       Permissions.CONTACTS
     );
@@ -28,68 +26,48 @@ export default class ContactsScreen extends React.Component {
     {
       return;
     }
-    const {data} = await Contacts.getContactsAsync({
-      fields:[Contacts.Fields.PhoneNumbers,
-        Contacts.Fields.Emails ]
-    });
-    // console.log(data);
-    this.setState({contacts:data,inMemoryContacts:data,isLoading:false});
 
+    const {data} = await Contacts.getContactsAsync({
+      fields:[Contacts.Fields.PhoneNumbers]
+    });
+    setIsLoading(false);
+    setContacts(data);
+    const agenda = data.map(contact => ({
+      phone: contact.phoneNumbers[0].number,
+      name: contact.name}))
+    updateState({agenda})
+    console.log(agenda)
   };
 
-  componentDidMount(){
-    this.setState({isLoading:true});
-    this.loadContacts();
-  }
+  useEffect(()=>{
+    loadContacts()
+  },[]);
 
-  renderItem = ({item}) => (
-    <View style={{minHeight:70,padding:5}}>
-        <Text style={{color:'#888',fontWeight:'bold',fontSize:26}}>
+  const renderItem = ({item}) => (
+    <View style={{minHeight:20,padding:5}}>
+        <Text style={{color:'#3C3C3A',fontWeight:'bold',fontSize:20}}>
           {item.firstName+" "}{item.lastName}
         </Text>
-        <Text style={{color:'white',fontWeight:'bold'}}>
-          {item.phoneNumbers && item.phoneNumbers[0] && item.phoneNumbers[0].digits ?
-          (item.phoneNumbers[0].digits):null
+        <Text style={{color:'#3C3C3A'}}>
+          {item.phoneNumbers && item.phoneNumbers[0] ?
+          (item.phoneNumbers[0].number):null
           }
         </Text>
     </View>
   );
 
-  searchContacts = value => {
-    const filteredContacts = this.state.inMemoryContacts.filter(
-      contact => {
-        let contactLowerCase = (contact.firstName +" " +contact.lastName).toLowerCase();
-        let searchTermCase = value.toLowerCase();
-        return contactLowerCase.indexOf(searchTermCase) > -1;
-      }
-    );
-      this.setState({contacts : filteredContacts});
-  };
-
-  render(){
   return (
     <View style={{flex:1}}>
-      <SafeAreaView style={{backgroundColor:'#F2E0D5'}} />
-        <TextInput placeholder="Search" placeholderTextColor='#dddddd'
-              style={{backgroundColor:'#8C625E',
-              height :50,
-              fontSize:36,
-              padding:10,
-              color:'white',
-              borderBottomWidth:0.5,
-              borderBottomColor:'#7d90a0'
-              }}
-              onChangeText={(value) => this.searchContacts(value)}/>
-    <View style={{flex:1,backgroundColor:'#F2E0D5'}}>
-      {this.state.isLoading ? (
+    <View style={{flex:1,marginTop:20,backgroundColor:'#FFFBFA'}}>
+      {isLoading ? (
       <View style={{...StyleSheet.absoluteFill,
             alignItems:'center',
             justifyContent:'center'}}>
               <ActivityIndicator size="large" color='#2f363c'/>
         </View>) : null }
-        <FlatList data={this.state.contacts}
+        <FlatList data={contacts}
                   keyExtractor={(item,index) => index.toString()}
-                  renderItem={this.renderItem}
+                  renderItem={renderItem}
                   ListEmptyComponent={() => (
                     <View style={{flex:1,alignItems:'center',justifyContent:'center',marginTop:50}}>
                     <Text style={{color:'#888'}}>No Contacts Found</Text>
@@ -100,13 +78,3 @@ export default class ContactsScreen extends React.Component {
   </View>
   );
 }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F2E0D5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
-});

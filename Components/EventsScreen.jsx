@@ -18,6 +18,8 @@ import axios from 'axios';
 import {Context as AuthContext} from '../Context/AuthContext';
 import Toast from 'react-native-toast-message';
 import * as firebase from 'firebase';
+import {Context as ContactsContext} from '../Context/ContactsContext';
+
 
 const wait = (timeout) => {
   return new Promise(resolve => {
@@ -31,6 +33,7 @@ export default function Events() {
   const [modalOpen, setModalOpen] = useState(false);
   const [eventList, setEventList] = useState([]);
   const {state} = useContext(AuthContext);
+  const {state: cstate} = useContext(ContactsContext);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -51,10 +54,10 @@ export default function Events() {
         key_cnt = key_cnt + 1;
          retrieveImage(e.phone)
         .then( url => {
-            console.log("URL is " + url);
+            // console.log("URL is " + url);
             e.img = url;
             setEventList(res.data);
-            console.log(res.data);
+            // console.log(res.data);
 
         })
         .catch(() => {
@@ -64,6 +67,7 @@ export default function Events() {
       });
 
     })
+    console.log(cstate)
   }
 
   useEffect(() => {
@@ -135,7 +139,7 @@ export default function Events() {
             text2: 'You joined the party.' +'🍷'
           });}
           } style={styles.joinButton}>
-            <AntDesign name="adduser" size={30} color="black" />
+            <AntDesign name="adduser" size={30} color="#5E8C7F" />
           </TouchableOpacity>
         }
 
@@ -150,7 +154,7 @@ export default function Events() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFBFA',
         paddingTop: 50,
         paddingHorizontal: 20
     },
@@ -162,47 +166,45 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        color: '#8C625E',
-        paddingLeft: 80,
+        color: '#618777',
+        paddingLeft: 90,
         position: 'absolute',
         marginTop:-35,
     },
     place: {
-      fontSize: 15,
+      fontSize: 12,
       color: '#8C625E',
-      paddingLeft: 80,
+      paddingLeft: 90,
       position: 'absolute',
-      marginTop:-7,
+      marginTop:20,
   },
     userImage: {
         flex: 1,
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         marginTop:-20,
-        borderRadius:15,
+        borderRadius:50,
     },
     host: {
-        fontSize: 17,
-        color: '#8C625E',
+        marginTop: -13,
+        fontSize: 20,
+        color: '#618777',
         position: 'absolute',
-        left: -5,
-        top: -44
+        paddingLeft: 87,
     },
     datetime: {
         color: '#8C625E',
         fontSize: 12,
-        paddingLeft: 80,
+        paddingLeft: 90,
         position: 'absolute',
-        marginTop:12,
-        top:3,
+        marginTop:35,
     },
     available: {
         color: '#8C625E',
-        fontSize: 10,
+        fontSize: 12,
         position: 'absolute',
-        paddingLeft:80,
-        marginTop:10,
-        top: 20
+        paddingLeft:90,
+        marginTop:50,
     },
     joinButton: {
         width: 70,
@@ -211,10 +213,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingTop: 5,
-        marginTop:-24,
+        marginTop:-14,
         marginLeft:10,
         borderRadius: 100,
-        backgroundColor: '#F2E0D5',
+        backgroundColor: '#FDEFDA',
         alignSelf: 'flex-end',
         position: 'absolute',
         opacity: 1
