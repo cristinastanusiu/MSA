@@ -6,20 +6,19 @@ import {View,
     ScrollView,
     RefreshControl,
     Alert,
-    Button,
-    TouchableOpacity} from 'react-native';
-import {ActionSheet,Root}  from 'native-base';
+    TouchableOpacity,
+    TouchableHighlight} from 'react-native';
+import {ActionSheet,Root,Container, Header, Content, Accordion}  from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as MediaLibrary from 'expo-media-library';
 import {Platform} from "react-native-web";
 import * as firebase from 'firebase';
-import { Ionicons } from '@expo/vector-icons';
 import Card from "./shared/Card";
 import {AntDesign} from "@expo/vector-icons";
+import Toast from 'react-native-toast-message';
 import axios from "axios";
 import {Context as AuthContext} from "../Context/AuthContext";
-import Toast from 'react-native-toast-message';
 
 const wait = (timeout) => {
     return new Promise(resolve => {
@@ -34,12 +33,34 @@ const uploadImage = async (uri,imgName) => {
     return ref.put(blob);
 }
 
+export function GetParticipantsF(event) {
+
+    console.log("In get PARTICIPANTS ");
+    console.log(event);
+
+    const [participants,setParticipants] = useState([]);
+     axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
+        .then((res) => {
+                console.log("In get participants " );
+                console.log(res.data);
+                setParticipants(res.data)});
+    return (
+            <View style={styles.participant}>{participants.children}</View>
+            );
+    }
+
 export default function ProfileScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [rerun, setRerun] = useState(false);
     const [image, setImage] = useState(null);
     const [eventsHistory, setEventsHistory] = useState([]);
     const {state, signout} = useContext(AuthContext);
+    const [expanded,setExpanded] = useState(false);
+    const [participants,setParticipants] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [displayParts, setdisplayParts] = useState(false);
+
+
 
     const phoneNumber = state.phoneNumber;
 
@@ -63,9 +84,41 @@ export default function ProfileScreen() {
                     setImage(url);
                     console.log("Profile screen1 url : " + url);
                 });
+        
         })();
     }, []);
 
+    useEffect(() => {
+        if(expanded){
+            if(participants.length > 0) {
+                // setdisplayParts(true);
+                const parts = participants.map(p =>  p.firstName + " " + p.lastName)
+                console.log("Participants : " + parts) ;
+                
+                Toast.show({
+                    text1: 'Your mates ' + '👇🏻',
+                    text2: parts +'🤘🏻'
+                  });
+                }
+            else{
+                // setdisplayParts(false);
+
+                console.log("No participants!")
+                Toast.show({
+                    text1: 'Ops ' + '🤔',
+                    text2: 'No participants yet' +'⏳'
+                  });            
+                }
+            }
+    }, [loading])
+
+    const getParticipants = (event) => {
+        const resp = axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
+            .then((res) =>res.data );
+            // console.log("Participants are");
+            // console.log(resp);
+            return resp;
+            };
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -83,28 +136,16 @@ export default function ProfileScreen() {
             setRerun(false);
     }, []);
 
-    const getParticipants =  (event) => {
-      const res = axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
-      .then((res) => res.data);
-      return res;
-    }
-
     const getUserEvents = (phoneNumber) => {
         axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents/' + phoneNumber)
         .then(res => {
             var key_cnt = 0;
             res.data.map(e => {
               e.key = key_cnt; key_cnt = key_cnt + 1;
-              getParticipants(e)
-              .then((rest)=>{
-                console.log("rest")
-                e.participants = rest;
-                console.log(res.data)
-              })
-setEventsHistory(res.data);
             })
-
-            console.log("Get user events : "+res.data);
+            setEventsHistory(res.data);
+            console.log("Get user events : ");
+            console.log(res.data);
         });
     }
         const takePhotoFromCamera = async () => {
@@ -184,7 +225,6 @@ setEventsHistory(res.data);
 
     return (
         <Root>
-
             <ScrollView
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -198,27 +238,43 @@ setEventsHistory(res.data);
                 </View>
                 <View>
                 </View>
+
                 <View style={styles2.container}>
-                
                 {eventsHistory.map(item => (
 
-                        <Card  key={item.key}>
-                        <View style={styles2.container}>
-                          {item.participants.map(p =>
-                            <Text style={styles2.title}>
-                              {p.firstName}
-                          </Text>)}
-                        </View>
+                    <Card  key={item.key}>
+                    <Text style={styles2.title}>
+                    {item.title} {item.place}
+                    </Text>
 
-                            // <Text style={styles2.title}>
-                            //     {item.title} {item.place}
-                            // </Text>
+                    <Text style={styles2.datetime}>{item.dateTime}</Text>
+                    <Text style={styles2.available}>
+                        Av: {item.currentPers}/{item.maxPers}</Text>
 
-                            <Text style={styles2.datetime}>{item.dateTime}</Text>
-                            <Text style={styles2.available}>
-                                Av: {item.currentPers}/{item.maxPers}</Text>
-                        </Card>)
-                        )}
+{/* 
+                    {displayParts  && <View>
+                                {participants.map(p => (
+                                     <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
+                                                 )
+                                        }</View> } */}
+                          <TouchableHighlight 
+                                style={styles.displayParts} 
+                                onPress={() => {
+                                    getParticipants(item).then((res) =>{
+                                        setExpanded(true);
+                                        setParticipants(res);
+                                        console.log(participants);
+                                        setLoading(!loading);
+                                        })
+                                }
+                            }
+                                underlayColor="#f1f1f1">
+                            <View >
+                                <Image source={ require('../assets/participants.png') } style={styles.expandIcon}></Image>
+                            </View>
+                            </TouchableHighlight>
+                </Card>)
+                )}
                 </View>
 
                 <TouchableOpacity onPress={signout} style={styles.logoutBtn}>
@@ -230,10 +286,21 @@ setEventsHistory(res.data);
 }
 
 const styles = StyleSheet.create({
+    participant:{
+        fontSize: 15,
+        color: '#8C625E',
+        paddingLeft: 20,
+    },
     content: {
         flex: 1,
         alignItems:'center',
         marginTop: 60,
+    },
+    expandIcon:{
+        height: 20,
+        width: 20 ,
+        padding:20,
+        borderRadius:50,
     },
     btnAddImage: {
         marginTop:5,
@@ -256,8 +323,8 @@ const styles = StyleSheet.create({
         resizeMode:'contain'
     },
     logoutBtn: {
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         color: '#8C625E',
         justifyContent: 'center',
         alignItems: 'center',
@@ -267,7 +334,22 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         position: 'absolute',
         opacity: 1
-
+    },
+    displayParts: {
+        backgroundColor: '#F2E0D5',
+        borderRadius: 100,
+        width:60,
+        height:60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 5,
+        marginTop:-24,
+        marginLeft:10,
+        borderRadius: 100,
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        opacity: 1
+      
     }
 });
 
@@ -342,3 +424,70 @@ const styles2 = StyleSheet.create({
 //     .catch((err) => {
 //         console.log("File" +imgName+ " not found in firebase " +err );
 //     });
+
+
+    // {eventsHistory.map(item => (
+
+    //     <Card  key={item.key}>
+    //      <Text style={styles2.title}>
+    //      {item.title} {item.place}
+    //      </Text>
+
+    //         <Text style={styles2.datetime}>{item.dateTime}</Text>
+    //         <Text style={styles2.available}>
+    //             Av: {item.currentPers}/{item.maxPers}</Text>
+
+    //             {expanded  && <FlatList data={getParticipants(item).then((res)=>{
+                                    // return res;
+    //                        })}} }
+
+
+    //             <TouchableHighlight 
+    //                     style={styles.displayParts} 
+    //                     onPress={() => {
+    //                         getParticipants(item).then((res)=>{
+    //                             console.log(res);
+    //                             setParticipants(res);
+    //                             setExpanded(!expanded);
+    //                        })}
+    //                      }
+    //                     underlayColor="#f1f1f1">
+    //                 <View >
+    //                     {expanded && <Image source={icons['up']} style={styles.expandIcon2}></Image>}
+    //                     {!expanded && <Image source={icons['down']} style={styles.expandIcon}></Image> }
+    //                 </View>
+    //                 </TouchableHighlight>
+    //     </Card>)
+    //     )}
+    // </View>
+
+    
+    //             {expanded  && <View>
+    //                 {participants.map(p => (
+    //                         <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
+    //                                 )
+    //                     }</View> }
+    //             <TouchableHighlight 
+    //                     style={styles.displayParts} 
+    //                     onPress={() => {
+    //                         getParticipants(item).then((res)=>{
+    //                             console.log(res);
+    //                             setParticipants(res);
+    //                             setExpanded(!expanded);
+    //                        })}
+    //                      }
+    //                     underlayColor="#f1f1f1">
+    //                 <View >
+    //                     {expanded && <Image source={icons['up']} style={styles.expandIcon2}></Image>}
+    //                     {!expanded && <Image source={icons['down']} style={styles.expandIcon}></Image> }
+    //                 </View>
+    //                 </TouchableHighlight>
+    //     </Card>)
+    //     )}
+    // </View>
+
+    // <FlatList
+    // data={getParticipants(item).then((res) => {res.data})}
+    // keyExtractor={(item,index) => index.toString()}
+    // renderItem={renderItem}
+    // />}
