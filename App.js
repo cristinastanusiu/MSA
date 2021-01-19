@@ -14,7 +14,6 @@ import RegisterScreen from './Components/RegisterScreen';
 import Tab1 from './Components/Tab1';
 import {Provider as AuthProvider} from './Context/AuthContext';
 import {Context as AuthContext} from './Context/AuthContext';
-import {Provider as ContactsProvider} from './Context/ContactsContext';
 import Toast from 'react-native-toast-message';
 
 
@@ -113,9 +112,7 @@ if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.firebaseConfig)}
 export default () => {
   return (
     <AuthProvider>
-      <ContactsProvider>
         <App />
-      </ContactsProvider>
     </AuthProvider>
   );
 };

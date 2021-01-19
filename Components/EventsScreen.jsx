@@ -18,7 +18,10 @@ import axios from 'axios';
 import {Context as AuthContext} from '../Context/AuthContext';
 import Toast from 'react-native-toast-message';
 import * as firebase from 'firebase';
-import {Context as ContactsContext} from '../Context/ContactsContext';
+import * as Permissions from 'expo-permissions';
+import * as Contacts from 'expo-contacts';
+// import {Context as ContactsContext} from '../Context/ContactsContext';
+// import { Context } from "../Context/Context"
 
 
 const wait = (timeout) => {
@@ -27,13 +30,17 @@ const wait = (timeout) => {
   });
 }
 
+var agenda = []
 
 export default function Events() {
   const [refreshing, setRefreshing] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [eventList, setEventList] = useState([]);
   const {state} = useContext(AuthContext);
-  const {state: cstate} = useContext(ContactsContext);
+  // const {state: cstate, updateState} = useContext(ContactsContext);
+  // const [context, setContext] = useContext(Context);
+  const [contacts, setContacts] = useState([]);
+  // const [agenda, setAgenda] = useState([]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -46,19 +53,58 @@ export default function Events() {
     return  ref.getDownloadURL();
       }
 
-  const getEvents = () => {
+
+      const loadContacts =  async() => {
+
+        const permisson = await Permissions.askAsync(
+          Permissions.CONTACTS
+        );
+        if(permisson.status !== 'granted')
+        {
+          return;
+        }
+
+        const {data} = await Contacts.getContactsAsync({
+          fields:[Contacts.Fields.PhoneNumbers]
+        });
+
+        setContacts(data);
+
+        const agendaa = data.map(contact => ({
+          phone: contact.phoneNumbers[0].number,
+          name: contact.name}))
+
+        agenda = agendaa;
+      };
+
+    const isMyContact = (e) => {
+      for(var i=0; i<agenda.length; i++){
+        if(agenda[i].phone === e.phone){
+          console.log("found");
+          e.contactName=agenda[i].name;
+          return true;
+        }
+      }
+      return false;
+    }
+
+
+
+  const getEvents = async () => {
+    await loadContacts();
     axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents').then(res => {
       var key_cnt = 0;
-       res.data.map(e => {
+      const filteredEvents = [];
+       res.data
+       .filter(isMyContact)
+       .map(e => {
         e.key = key_cnt;
         key_cnt = key_cnt + 1;
          retrieveImage(e.phone)
         .then( url => {
-            // console.log("URL is " + url);
             e.img = url;
-            setEventList(res.data);
-            // console.log(res.data);
-
+            filteredEvents.push(e);
+            setEventList(filteredEvents);
         })
         .catch(() => {
           e.img = '';
@@ -67,7 +113,6 @@ export default function Events() {
       });
 
     })
-    console.log(cstate)
   }
 
   useEffect(() => {
@@ -78,7 +123,6 @@ export default function Events() {
       axios.post('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/addEvent/' + state.phoneNumber,
       {
         dateTime: myevent.datetime,
-        // dateTime: "2021-01-03 14:42:51",
         maxPers: myevent.maxPers,
         currentPers: myevent.currentPers,
         place: myevent.place,
@@ -123,9 +167,8 @@ export default function Events() {
               {!item.img && <Image source={require('../assets/default.png')} style={styles.userImage} />}
               {item.img && <Image source={{ uri: item.img }} style={styles.userImage} />}
           </View>
-          {/* TO DO - hostName from contact list */}
-          <Text style={styles.host}> {item.phone} </Text>
-
+          <Text style={styles.hostnr}> {item.phone} </Text>
+          <Text style={styles.hostname}> {item.contactName} </Text>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.place}>{item.place}</Text>
           <Text style={styles.datetime}>{item.dateTime}</Text>
@@ -165,11 +208,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#D9C6BF'//#66CCCC'
     },
     title: {
-        fontSize: 20,
+        fontSize: 18,
         color: '#618777',
         paddingLeft: 90,
         position: 'absolute',
-        marginTop:-35,
+        marginTop:-45,
     },
     place: {
       fontSize: 12,
@@ -185,9 +228,16 @@ const styles = StyleSheet.create({
         marginTop:-20,
         borderRadius:50,
     },
-    host: {
-        marginTop: -13,
-        fontSize: 20,
+    hostnr: {
+        marginTop: 5,
+        fontSize: 12,
+        color: '#618777',
+        position: 'absolute',
+        paddingLeft: 87,
+    },
+    hostname: {
+        marginTop: -20,
+        fontSize: 18,
         color: '#618777',
         position: 'absolute',
         paddingLeft: 87,

@@ -6,16 +6,16 @@ import {
   TextInput,
   SafeAreaView,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Button
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
-import {Context as ContactsContext} from '../Context/ContactsContext';
 
 export default function ContactsScreen () {
   const [isLoading, setIsLoading] = useState(false);
   const [contacts, setContacts] = useState([]);
-  const {agendaState, updateState} = useContext(ContactsContext);
+
 
   const loadContacts = async () => {
     setIsLoading(true);
@@ -30,17 +30,13 @@ export default function ContactsScreen () {
     const {data} = await Contacts.getContactsAsync({
       fields:[Contacts.Fields.PhoneNumbers]
     });
+
     setIsLoading(false);
     setContacts(data);
-    const agenda = data.map(contact => ({
-      phone: contact.phoneNumbers[0].number,
-      name: contact.name}))
-    updateState({agenda})
-    console.log(agenda)
   };
 
   useEffect(()=>{
-    loadContacts()
+   loadContacts()
   },[]);
 
   const renderItem = ({item}) => (
@@ -76,5 +72,6 @@ export default function ContactsScreen () {
                   />
     </View>
   </View>
+
   );
 }

@@ -24,6 +24,7 @@ const authReducer = (state, action) => {
 };
 
 const signup = dispatch => {
+  console.log("in signup")
   return ({phoneNumber, password, firstName, lastName}) => {
     console.log('Signup');
     let token='';
