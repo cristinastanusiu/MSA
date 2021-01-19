@@ -263,7 +263,7 @@ export default function ProfileScreen() {
                                         Av: {onEventHistory.currentPers}/{onEventHistory.maxPers}</Text>
 
                                         {displayParts  && 
-                                            <Card key={i} ><View style={{alignItems:'center',alignSelf:'center', marginTop:-20,}}>
+                                            <Card style={{paddingTop:20}} key={i} ><View style={{alignItems:'center',alignSelf:'center', marginTop:-20,}}>
                                                 {participants.map(p => (
                                                     <Text style={styles.participant}>{p.firstName} {p.lastName} </Text>)
                                                         )
