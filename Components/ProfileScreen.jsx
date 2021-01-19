@@ -6,20 +6,22 @@ import {View,
     ScrollView,
     RefreshControl,
     Alert,
-    Button,
-    TouchableOpacity} from 'react-native';
-import {ActionSheet,Root}  from 'native-base';
+    Modal,
+    TouchableOpacity,
+    TouchableHighlight} from 'react-native';
+import {ActionSheet,Root,Container, Header, Content, Accordion}  from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as MediaLibrary from 'expo-media-library';
 import {Platform} from "react-native-web";
 import * as firebase from 'firebase';
-import { Ionicons } from '@expo/vector-icons';
 import Card from "./shared/Card";
-import {AntDesign} from "@expo/vector-icons";
+import {Entypo,AntDesign,Ionicons,MaterialIcons} from "@expo/vector-icons";
+import Toast from 'react-native-toast-message';
 import axios from "axios";
 import {Context as AuthContext} from "../Context/AuthContext";
-import Toast from 'react-native-toast-message';
+import EventHistory from './EventHistory';
+
 
 const wait = (timeout) => {
     return new Promise(resolve => {
@@ -34,12 +36,19 @@ const uploadImage = async (uri,imgName) => {
     return ref.put(blob);
 }
 
+
 export default function ProfileScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [rerun, setRerun] = useState(false);
     const [image, setImage] = useState(null);
     const [eventsHistory, setEventsHistory] = useState([]);
     const {state, signout} = useContext(AuthContext);
+    const [expanded,setExpanded] = useState(false);
+    const [participants,setParticipants] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [displayParts, setdisplayParts] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [onEventHistory,setOnEventHistory] = useState();
 
     const phoneNumber = state.phoneNumber;
 
@@ -63,9 +72,40 @@ export default function ProfileScreen() {
                     setImage(url);
                     console.log("Profile screen1 url : " + url);
                 });
+        
         })();
     }, []);
 
+    useEffect(() => {
+        if(expanded){
+            if(participants.length > 0) {
+                setdisplayParts(true);
+                // const parts = participants.map(p =>  p.firstName + " " + p.lastName)
+                // console.log("Participants : " + parts) ;
+                
+                // Toast.show({
+                //     text1: 'Your mates ' + '👇🏻',
+                //     text2: parts +'🤘🏻'
+                //   });
+                }
+            else{
+                setdisplayParts(false);
+
+                console.log("No participants!")
+                    Alert.alert(
+                    'Ops ' + '🤔',
+                    'No participants yet' +'⏳'
+                  );            
+            }
+    }}, [loading])
+
+    const getParticipants = (event) => {
+        const resp = axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
+            .then((res) =>res.data );
+            // console.log("Participants are");
+            // console.log(resp);
+            return resp;
+            };
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -83,28 +123,16 @@ export default function ProfileScreen() {
             setRerun(false);
     }, []);
 
-    const getParticipants =  (event) => {
-      const res = axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
-      .then((res) => res.data);
-      return res;
-    }
-
     const getUserEvents = (phoneNumber) => {
         axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getEvents/' + phoneNumber)
         .then(res => {
             var key_cnt = 0;
             res.data.map(e => {
               e.key = key_cnt; key_cnt = key_cnt + 1;
-              getParticipants(e)
-              .then((rest)=>{
-                console.log("rest")
-                e.participants = rest;
-                console.log(res.data)
-              })
-setEventsHistory(res.data);
             })
-
-            console.log("Get user events : "+res.data);
+            setEventsHistory(res.data);
+            console.log("Get user events : ");
+            console.log(res.data);
         });
     }
         const takePhotoFromCamera = async () => {
@@ -184,7 +212,6 @@ setEventsHistory(res.data);
 
     return (
         <Root>
-
             <ScrollView
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -198,26 +225,89 @@ setEventsHistory(res.data);
                 </View>
                 <View>
                 </View>
+
                 <View style={styles2.container}>
-                {eventsHistory.map(item => (
+                {eventsHistory.map((item,i) => (
 
-                        <Card  key={item.key}>
-                        <View style={styles2.container}>
-                          {item.participants.map(p =>
-                            <Text style={styles2.title}>
-                              {p.firstName}
-                          </Text>)}
+                    <Card  key={item.key}>
+                    <Text style={styles2.title}>
+                    {item.title} {item.place}
+                    </Text>
+
+                    <Text style={styles2.datetime}>{item.dateTime}</Text>
+                    <Text style={styles2.available}>
+                        Av: {item.currentPers}/{item.maxPers}</Text>
+                
+                    
+                    <Entypo name="info"
+                            size={30}
+                            color="black"
+                            style={styles.infoBtn}
+                            onPress={() => {
+                                setModalOpen(true); 
+                                console.log(item);
+                                setOnEventHistory(item);
+                                console.log(onEventHistory);
+                            }}
+                    />
+
+                   {onEventHistory && <Modal visible={modalOpen} animationType='fade'>
+                        <View style={styles.modalContent}>
+                                <Card  key={onEventHistory.key}>
+                                    <Text style={styles2.title}>
+                                    {onEventHistory.title} {onEventHistory.place}
+                                    </Text>
+
+                                    <Text style={styles2.datetime}>{onEventHistory.dateTime}</Text>
+                                    <Text style={styles2.available}>
+                                        Av: {onEventHistory.currentPers}/{onEventHistory.maxPers}</Text>
+
+                                        {displayParts  && 
+                                            <Card key={i} ><View style={{alignItems:'center',alignSelf:'center', marginTop:-20,}}>
+                                                {participants.map(p => (
+                                                    <Text style={styles.participant}>{p.firstName} {p.lastName} </Text>)
+                                                        )
+                                                        }</View></Card>}
+                                
+                                     <TouchableHighlight 
+                                            style={styles.displayParts} 
+                                            onPress={() => {
+                                                getParticipants(onEventHistory).then((res) =>{
+                                                    setExpanded(true);
+                                                    setParticipants(res);
+                                                    console.log(participants);
+                                                    setLoading(!loading);
+                                                    })
+                                            }
+                                        }
+                                            underlayColor="#f1f1f1">
+                                        <View >
+                                            <Ionicons name="people" size={35} color="black" />
+                                        </View>
+                                        </TouchableHighlight>
+                                        
+                                        <TouchableHighlight 
+                                        style={styles.deleteEvent} 
+                                        onPress={() => {
+                                                console.log("Event deleted!");
+                                                Alert.alert(
+                                                            'Really?! ' +'😳',
+                                                            'Your event has been successfully deleted!' 
+                                                        );      }}>
+                                            <MaterialIcons name="delete" size={30} color="black" />
+                                        </TouchableHighlight >
+                                        </Card>
+
+                          <MaterialIcons name="arrow-back" size={40} color="black" style={styles.backButton} 
+                          onPress={() => {
+                              setParticipants([]);
+                              setModalOpen(false);
+                              setdisplayParts(false);}}/>
                         </View>
-
-                            // <Text style={styles2.title}>
-                            //     {item.title} {item.place}
-                            // </Text>
-
-                            <Text style={styles2.datetime}>{item.dateTime}</Text>
-                            <Text style={styles2.available}>
-                                Av: {item.currentPers}/{item.maxPers}</Text>
-                        </Card>)
-                        )}
+                    </Modal> }
+                            
+                </Card>)
+                )}
                 </View>
 
                 <TouchableOpacity onPress={signout} style={styles.logoutBtn}>
@@ -229,10 +319,25 @@ setEventsHistory(res.data);
 }
 
 const styles = StyleSheet.create({
+    modalContent: {
+        flex: 1,
+        marginTop:150,
+    },
+    participant:{
+        fontSize: 15,
+        color: '#8C625E',
+        paddingLeft: 20,
+    },
     content: {
         flex: 1,
         alignItems:'center',
         marginTop: 60,
+    },
+    expandIcon:{
+        height: 20,
+        width: 20 ,
+        padding:20,
+        borderRadius:50,
     },
     btnAddImage: {
         marginTop:5,
@@ -255,8 +360,8 @@ const styles = StyleSheet.create({
         resizeMode:'contain'
     },
     logoutBtn: {
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         color: '#8C625E',
         justifyContent: 'center',
         alignItems: 'center',
@@ -266,7 +371,47 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         position: 'absolute',
         opacity: 1
-
+    },
+    infoBtn: {
+        backgroundColor: '#F2E0D5',
+        borderRadius: 100,
+        width:60,
+        height:60,
+        padding: 5,
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        paddingLeft:13,
+        paddingTop:10,
+    }, 
+    displayParts: {
+        width: 50,
+        height: 50,
+        color: '#8C625E',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 1,
+        borderRadius: 100,
+        backgroundColor: '#F2E0D5',
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        opacity: 1,
+        marginLeft:13,
+        marginTop:-35,
+    },
+    deleteEvent:{
+        width: 50,
+        height: 50,
+        color: '#8C625E',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 1,
+        borderRadius: 100,
+        backgroundColor: '#F2E0D5',
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        opacity: 1,
+        marginLeft:13,
+        marginTop:20,
     }
 });
 
@@ -302,19 +447,7 @@ const styles2 = StyleSheet.create({
         left: 20,
         marginTop:0,
     },
-    joinButton: {
-        width: 50,
-        height: 50,
-        color: '#8C625E',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 1,
-        borderRadius: 100,
-        backgroundColor: '#F2E0D5',
-        alignSelf: 'flex-end',
-        position: 'absolute',
-        opacity: 1
-    },
+   
     addEventButton: {
         borderWidth: 3,
         borderColor: "#f2f2f2",
@@ -323,6 +456,31 @@ const styles2 = StyleSheet.create({
         alignSelf: 'center'
     }
 });
+
+
+{/* 
+                    {displayParts  && <View>
+                                {participants.map(p => (
+                                     <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
+                                                 )
+                                        }</View> } */}
+                          {/* <TouchableHighlight 
+                                style={styles.displayParts} 
+                                onPress={() => {
+                                    getParticipants(item).then((res) =>{
+                                        setExpanded(true);
+                                        setParticipants(res);
+                                        console.log(participants);
+                                        setLoading(!loading);
+                                        })
+                                }
+                            }
+                                underlayColor="#f1f1f1">
+                            <View >
+                                <Image source={ require('../assets/participants.png') } style={styles.expandIcon}></Image>
+                            </View>
+                            </TouchableHighlight> */}
+                            
 
 
 //get image from firebase
@@ -341,3 +499,70 @@ const styles2 = StyleSheet.create({
 //     .catch((err) => {
 //         console.log("File" +imgName+ " not found in firebase " +err );
 //     });
+
+
+    // {eventsHistory.map(item => (
+
+    //     <Card  key={item.key}>
+    //      <Text style={styles2.title}>
+    //      {item.title} {item.place}
+    //      </Text>
+
+    //         <Text style={styles2.datetime}>{item.dateTime}</Text>
+    //         <Text style={styles2.available}>
+    //             Av: {item.currentPers}/{item.maxPers}</Text>
+
+    //             {expanded  && <FlatList data={getParticipants(item).then((res)=>{
+                                    // return res;
+    //                        })}} }
+
+
+    //             <TouchableHighlight 
+    //                     style={styles.displayParts} 
+    //                     onPress={() => {
+    //                         getParticipants(item).then((res)=>{
+    //                             console.log(res);
+    //                             setParticipants(res);
+    //                             setExpanded(!expanded);
+    //                        })}
+    //                      }
+    //                     underlayColor="#f1f1f1">
+    //                 <View >
+    //                     {expanded && <Image source={icons['up']} style={styles.expandIcon2}></Image>}
+    //                     {!expanded && <Image source={icons['down']} style={styles.expandIcon}></Image> }
+    //                 </View>
+    //                 </TouchableHighlight>
+    //     </Card>)
+    //     )}
+    // </View>
+
+    
+    //             {expanded  && <View>
+    //                 {participants.map(p => (
+    //                         <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
+    //                                 )
+    //                     }</View> }
+    //             <TouchableHighlight 
+    //                     style={styles.displayParts} 
+    //                     onPress={() => {
+    //                         getParticipants(item).then((res)=>{
+    //                             console.log(res);
+    //                             setParticipants(res);
+    //                             setExpanded(!expanded);
+    //                        })}
+    //                      }
+    //                     underlayColor="#f1f1f1">
+    //                 <View >
+    //                     {expanded && <Image source={icons['up']} style={styles.expandIcon2}></Image>}
+    //                     {!expanded && <Image source={icons['down']} style={styles.expandIcon}></Image> }
+    //                 </View>
+    //                 </TouchableHighlight>
+    //     </Card>)
+    //     )}
+    // </View>
+
+    // <FlatList
+    // data={getParticipants(item).then((res) => {res.data})}
+    // keyExtractor={(item,index) => index.toString()}
+    // renderItem={renderItem}
+    // />}
