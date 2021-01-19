@@ -209,6 +209,14 @@ export default function ProfileScreen() {
         }
     };
 
+    
+const deleteEvent = (event) => {
+    console.log("Event to delet: ");
+    console.log(event);
+
+    axios.delete('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/deleteEvent/?eventId=' + event.id)
+        .then(() => console.log("Event deleted in deleteEvent!") );
+        };
 
     return (
         <Root>
@@ -264,8 +272,8 @@ export default function ProfileScreen() {
 
                                         {displayParts  && 
                                             <Card style={{paddingTop:20}} key={i} ><View style={{alignItems:'center',alignSelf:'center', marginTop:-20,}}>
-                                                {participants.map(p => (
-                                                    <Text style={styles.participant}>{p.firstName} {p.lastName} </Text>)
+                                                {participants.map((p,j) => (
+                                                    <Text key={j} style={styles.participant}>{p.firstName} {p.lastName} </Text>)
                                                         )
                                                         }</View></Card>}
                                 
@@ -289,11 +297,15 @@ export default function ProfileScreen() {
                                         <TouchableHighlight 
                                         style={styles.deleteEvent} 
                                         onPress={() => {
-                                                console.log("Event deleted!");
+                                                deleteEvent(onEventHistory);
+                                                // .then(() => {
+                                                //     console.log("Event deleted!");
+                                                // })
                                                 Alert.alert(
                                                             'Really?! ' +'😳',
                                                             'Your event has been successfully deleted!' 
-                                                        );      }}>
+                                                        );      
+                                                        setModalOpen(false);}}>
                                             <MaterialIcons name="delete" size={30} color="black" />
                                         </TouchableHighlight >
                                         </Card>
