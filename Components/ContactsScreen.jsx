@@ -41,10 +41,10 @@ export default function ContactsScreen () {
 
   const renderItem = ({item}) => (
     <View style={{minHeight:20,padding:5}}>
-        <Text style={{color:'#3C3C3A',fontWeight:'bold',fontSize:20}}>
+        <Text style={{color:'#2E4053',fontWeight:'bold',fontSize:20}}>
           {item.firstName+" "}{item.lastName}
         </Text>
-        <Text style={{color:'#3C3C3A'}}>
+        <Text style={{color:'#2E4053'}}>
           {item.phoneNumbers && item.phoneNumbers[0] ?
           (item.phoneNumbers[0].number):null
           }
@@ -54,7 +54,7 @@ export default function ContactsScreen () {
 
   return (
     <View style={{flex:1}}>
-    <View style={{flex:1,marginTop:20,backgroundColor:'#FFFBFA'}}>
+    <View style={{flex:1,marginTop:20,backgroundColor:'#F2F4F4'}}>
       {isLoading ? (
       <View style={{...StyleSheet.absoluteFill,
             alignItems:'center',

@@ -42,7 +42,7 @@ export default function EventCard(props){
         text2: 'You joined the party.' +'🍷'
       });}
       } style={styles.joinButton}>
-        <AntDesign name="adduser" size={30} color="#5E8C7F" />
+        <AntDesign name="adduser" size={30} color="#34495E" />
       </TouchableOpacity>
     }</>
     )
@@ -51,14 +51,14 @@ export default function EventCard(props){
 const styles = StyleSheet.create({
   title: {
       fontSize: 18,
-      color: '#618777',
+      color: '#34495E',
       paddingLeft: 90,
       position: 'absolute',
       marginTop:-45,
   },
   place: {
     fontSize: 12,
-    color: '#8C625E',
+    color: '#5D6D7E',
     paddingLeft: 90,
     position: 'absolute',
     marginTop:20,
@@ -73,26 +73,26 @@ const styles = StyleSheet.create({
   hostnr: {
       marginTop: 5,
       fontSize: 12,
-      color: '#618777',
+      color: '#34495E',
       position: 'absolute',
       paddingLeft: 87,
   },
   hostname: {
       marginTop: -20,
       fontSize: 18,
-      color: '#618777',
+      color: '#34495E',
       position: 'absolute',
       paddingLeft: 87,
   },
   datetime: {
-      color: '#8C625E',
+      color: '#5D6D7E',
       fontSize: 12,
       paddingLeft: 90,
       position: 'absolute',
       marginTop:35,
   },
   available: {
-      color: '#8C625E',
+      color: '#5D6D7E',
       fontSize: 12,
       position: 'absolute',
       paddingLeft:90,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
       marginTop:-14,
       marginLeft:10,
       borderRadius: 100,
-      backgroundColor: '#FDEFDA',
+      backgroundColor: '#AEB6BF',
       alignSelf: 'flex-end',
       position: 'absolute',
       opacity: 1

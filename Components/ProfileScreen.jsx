@@ -72,7 +72,7 @@ export default function ProfileScreen() {
                     setImage(url);
                     console.log("Profile screen1 url : " + url);
                 });
-        
+
         })();
     }, []);
 
@@ -82,7 +82,7 @@ export default function ProfileScreen() {
                 setdisplayParts(true);
                 // const parts = participants.map(p =>  p.firstName + " " + p.lastName)
                 // console.log("Participants : " + parts) ;
-                
+
                 // Toast.show({
                 //     text1: 'Your mates ' + '👇🏻',
                 //     text2: parts +'🤘🏻'
@@ -95,7 +95,7 @@ export default function ProfileScreen() {
                     Alert.alert(
                     'Ops ' + '🤔',
                     'No participants yet' +'⏳'
-                  );            
+                  );
             }
     }}, [loading])
 
@@ -209,7 +209,7 @@ export default function ProfileScreen() {
         }
     };
 
-    
+
 const deleteEvent = (event) => {
     console.log("Event to delet: ");
     console.log(event);
@@ -245,14 +245,14 @@ const deleteEvent = (event) => {
                     <Text style={styles2.datetime}>{item.dateTime}</Text>
                     <Text style={styles2.available}>
                         Av: {item.currentPers}/{item.maxPers}</Text>
-                
-                    
+
+
                     <Entypo name="info"
                             size={30}
                             color="black"
                             style={styles.infoBtn}
                             onPress={() => {
-                                setModalOpen(true); 
+                                setModalOpen(true);
                                 console.log(item);
                                 setOnEventHistory(item);
                                 console.log(onEventHistory);
@@ -270,15 +270,15 @@ const deleteEvent = (event) => {
                                     <Text style={styles2.available}>
                                         Av: {onEventHistory.currentPers}/{onEventHistory.maxPers}</Text>
 
-                                        {displayParts  && 
-                                            <Card style={{paddingTop:20}} key={i} ><View style={{alignItems:'center',alignSelf:'center', marginTop:-20,}}>
+                                        {displayParts  &&
+                                            <Card style={{marginTop:40}} key={i} ><View style={{alignItems:'center',alignSelf:'center', marginTop:-20}}>
                                                 {participants.map((p,j) => (
                                                     <Text key={j} style={styles.participant}>{p.firstName} {p.lastName} </Text>)
                                                         )
                                                         }</View></Card>}
-                                
-                                     <TouchableHighlight 
-                                            style={styles.displayParts} 
+
+                                     <TouchableHighlight
+                                            style={styles.displayParts}
                                             onPress={() => {
                                                 getParticipants(onEventHistory).then((res) =>{
                                                     setExpanded(true);
@@ -290,12 +290,12 @@ const deleteEvent = (event) => {
                                         }
                                             underlayColor="#f1f1f1">
                                         <View >
-                                            <Ionicons name="people" size={35} color="black" />
+                                            <Ionicons name="people" size={25} color="black" />
                                         </View>
                                         </TouchableHighlight>
-                                        
-                                        <TouchableHighlight 
-                                        style={styles.deleteEvent} 
+
+                                        <TouchableHighlight
+                                        style={styles.deleteEvent}
                                         onPress={() => {
                                                 deleteEvent(onEventHistory);
                                                 // .then(() => {
@@ -303,21 +303,21 @@ const deleteEvent = (event) => {
                                                 // })
                                                 Alert.alert(
                                                             'Really?! ' +'😳',
-                                                            'Your event has been successfully deleted!' 
-                                                        );      
+                                                            'Your event has been successfully deleted!'
+                                                        );
                                                         setModalOpen(false);}}>
-                                            <MaterialIcons name="delete" size={30} color="black" />
+                                            <MaterialIcons name="delete" size={20} color="black" />
                                         </TouchableHighlight >
                                         </Card>
 
-                          <MaterialIcons name="arrow-back" size={40} color="black" style={styles.backButton} 
+                          <MaterialIcons name="arrow-back" size={40} color="black" style={styles.backButton}
                           onPress={() => {
                               setParticipants([]);
                               setModalOpen(false);
                               setdisplayParts(false);}}/>
                         </View>
                     </Modal> }
-                            
+
                 </Card>)
                 )}
                 </View>
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     },
     participant:{
         fontSize: 15,
-        color: '#8C625E',
+        color: '#2E4053',
         paddingLeft: 20,
     },
     content: {
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     btnAddImage: {
         marginTop:5,
         marginBottom:10,
-        backgroundColor: "#8C625E",
+        backgroundColor: "#85929E",
         height:50,
         width: 180,
         borderRadius: 15,
@@ -365,27 +365,29 @@ const styles = StyleSheet.create({
         color:'#ffffff',
     },
     itemImage:{
-        height: 150,
-        width: 150 ,
+        height: 100,
+        width: 100 ,
         borderRadius: 60,
         marginTop: 0,
-        resizeMode:'contain'
+        resizeMode:'cover'
     },
     logoutBtn: {
-        width: 80,
-        height: 80,
+        width: 50,
+        height: 50,
         color: '#8C625E',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,
+        marginTop: 15,
+        marginLeft: -10,
         borderRadius: 100,
-        backgroundColor: '#F2E0D5',
+        backgroundColor: '#AEB6BF',
         alignSelf: 'flex-end',
         position: 'absolute',
         opacity: 1
     },
     infoBtn: {
-        backgroundColor: '#F2E0D5',
+        backgroundColor: '#AEB6BF',
         borderRadius: 100,
         width:60,
         height:60,
@@ -394,7 +396,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         paddingLeft:13,
         paddingTop:10,
-    }, 
+    },
     displayParts: {
         width: 50,
         height: 50,
@@ -403,7 +405,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 1,
         borderRadius: 100,
-        backgroundColor: '#F2E0D5',
+        backgroundColor: '#85929E',
         alignSelf: 'flex-end',
         position: 'absolute',
         opacity: 1,
@@ -418,7 +420,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 1,
         borderRadius: 100,
-        backgroundColor: '#F2E0D5',
+        backgroundColor: '#85929E',
         alignSelf: 'flex-end',
         position: 'absolute',
         opacity: 1,
@@ -444,22 +446,22 @@ const styles2 = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        color: '#8C625E',
+        color: '#34495E',
         paddingLeft: 20,
         marginTop:-30,
     },
     datetime: {
-        color: '#8C625E',
+        color: '#5D6D7E',
         fontSize: 17,
         left: 20,
     },
     available: {
-        color: '#8C625E',
+        color: '#5D6D7E',
         fontSize: 17,
         left: 20,
         marginTop:0,
     },
-   
+
     addEventButton: {
         borderWidth: 3,
         borderColor: "#f2f2f2",
@@ -470,14 +472,14 @@ const styles2 = StyleSheet.create({
 });
 
 
-{/* 
+{/*
                     {displayParts  && <View>
                                 {participants.map(p => (
                                      <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
                                                  )
                                         }</View> } */}
-                          {/* <TouchableHighlight 
-                                style={styles.displayParts} 
+                          {/* <TouchableHighlight
+                                style={styles.displayParts}
                                 onPress={() => {
                                     getParticipants(item).then((res) =>{
                                         setExpanded(true);
@@ -492,7 +494,7 @@ const styles2 = StyleSheet.create({
                                 <Image source={ require('../assets/participants.png') } style={styles.expandIcon}></Image>
                             </View>
                             </TouchableHighlight> */}
-                            
+
 
 
 //get image from firebase
@@ -529,8 +531,8 @@ const styles2 = StyleSheet.create({
     //                        })}} }
 
 
-    //             <TouchableHighlight 
-    //                     style={styles.displayParts} 
+    //             <TouchableHighlight
+    //                     style={styles.displayParts}
     //                     onPress={() => {
     //                         getParticipants(item).then((res)=>{
     //                             console.log(res);
@@ -548,14 +550,14 @@ const styles2 = StyleSheet.create({
     //     )}
     // </View>
 
-    
+
     //             {expanded  && <View>
     //                 {participants.map(p => (
     //                         <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
     //                                 )
     //                     }</View> }
-    //             <TouchableHighlight 
-    //                     style={styles.displayParts} 
+    //             <TouchableHighlight
+    //                     style={styles.displayParts}
     //                     onPress={() => {
     //                         getParticipants(item).then((res)=>{
     //                             console.log(res);

@@ -75,9 +75,7 @@ export default function Events() {
 
     const isMyContact = (e) => {
       for(var i=0; i<agenda.length; i++){
-        console.log(agenda[i].phone)
-        if(agenda[i].phone === e.phone || e.phone === state.phoneNumber){
-          console.log("found");
+        if(agenda[i].phone === e.phone){
           e.contactName=agenda[i].name;
           return true;
         }
@@ -144,7 +142,7 @@ export default function Events() {
   return (
   <View style={styles.container}>
     <TouchableOpacity onPress={() => setModalOpen(true)} style={styles.addEventButton}>
-      <AntDesign name="plus" size={20} style={{marginTop:-5}} color="#5E8C7F" />
+      <AntDesign name="plus" size={20} style={{marginTop:-5}} color="#EBEDEF" />
     </TouchableOpacity>
     <Modal visible={modalOpen} animationType='slide'>
       <View style={styles.modalContent}>
@@ -168,7 +166,7 @@ export default function Events() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFBFA',
+        backgroundColor: '#F2F4F4',
         paddingTop: 50,
         paddingHorizontal: 20
     },
@@ -187,10 +185,10 @@ const styles = StyleSheet.create({
       marginTop:620,
       marginLeft: 300,
       borderRadius: 50,
-      backgroundColor: '#618777',
+      backgroundColor: '#1B2631',
       // alignSelf: 'center',
       position: 'absolute',
-      opacity: .5,
+      opacity: .7,
       zIndex: 2,
       borderColor: 'transparent'
     },
