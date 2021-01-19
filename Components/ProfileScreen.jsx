@@ -6,6 +6,7 @@ import {View,
     ScrollView,
     RefreshControl,
     Alert,
+    Modal,
     TouchableOpacity,
     TouchableHighlight} from 'react-native';
 import {ActionSheet,Root,Container, Header, Content, Accordion}  from 'native-base';
@@ -15,10 +16,12 @@ import * as MediaLibrary from 'expo-media-library';
 import {Platform} from "react-native-web";
 import * as firebase from 'firebase';
 import Card from "./shared/Card";
-import {AntDesign} from "@expo/vector-icons";
+import {Entypo,AntDesign,Ionicons,MaterialIcons} from "@expo/vector-icons";
 import Toast from 'react-native-toast-message';
 import axios from "axios";
 import {Context as AuthContext} from "../Context/AuthContext";
+import EventHistory from './EventHistory';
+
 
 const wait = (timeout) => {
     return new Promise(resolve => {
@@ -33,21 +36,6 @@ const uploadImage = async (uri,imgName) => {
     return ref.put(blob);
 }
 
-export function GetParticipantsF(event) {
-
-    console.log("In get PARTICIPANTS ");
-    console.log(event);
-
-    const [participants,setParticipants] = useState([]);
-     axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
-        .then((res) => {
-                console.log("In get participants " );
-                console.log(res.data);
-                setParticipants(res.data)});
-    return (
-            <View style={styles.participant}>{participants.children}</View>
-            );
-    }
 
 export default function ProfileScreen() {
     const [refreshing, setRefreshing] = useState(false);
@@ -59,8 +47,8 @@ export default function ProfileScreen() {
     const [participants,setParticipants] = useState([]);
     const [loading, setLoading] = useState(false);
     const [displayParts, setdisplayParts] = useState(false);
-
-
+    const [modalOpen, setModalOpen] = useState(false);
+    const [onEventHistory,setOnEventHistory] = useState();
 
     const phoneNumber = state.phoneNumber;
 
@@ -91,26 +79,25 @@ export default function ProfileScreen() {
     useEffect(() => {
         if(expanded){
             if(participants.length > 0) {
-                // setdisplayParts(true);
-                const parts = participants.map(p =>  p.firstName + " " + p.lastName)
-                console.log("Participants : " + parts) ;
+                setdisplayParts(true);
+                // const parts = participants.map(p =>  p.firstName + " " + p.lastName)
+                // console.log("Participants : " + parts) ;
                 
-                Toast.show({
-                    text1: 'Your mates ' + '👇🏻',
-                    text2: parts +'🤘🏻'
-                  });
+                // Toast.show({
+                //     text1: 'Your mates ' + '👇🏻',
+                //     text2: parts +'🤘🏻'
+                //   });
                 }
             else{
-                // setdisplayParts(false);
+                setdisplayParts(false);
 
                 console.log("No participants!")
-                Toast.show({
-                    text1: 'Ops ' + '🤔',
-                    text2: 'No participants yet' +'⏳'
-                  });            
-                }
+                    Alert.alert(
+                    'Ops ' + '🤔',
+                    'No participants yet' +'⏳'
+                  );            
             }
-    }, [loading])
+    }}, [loading])
 
     const getParticipants = (event) => {
         const resp = axios.get('http://ec2-3-10-56-236.eu-west-2.compute.amazonaws.com:8080/getParticipants/' + event.id)
@@ -240,7 +227,7 @@ export default function ProfileScreen() {
                 </View>
 
                 <View style={styles2.container}>
-                {eventsHistory.map(item => (
+                {eventsHistory.map((item,i) => (
 
                     <Card  key={item.key}>
                     <Text style={styles2.title}>
@@ -250,29 +237,75 @@ export default function ProfileScreen() {
                     <Text style={styles2.datetime}>{item.dateTime}</Text>
                     <Text style={styles2.available}>
                         Av: {item.currentPers}/{item.maxPers}</Text>
+                
+                    
+                    <Entypo name="info"
+                            size={30}
+                            color="black"
+                            style={styles.infoBtn}
+                            onPress={() => {
+                                setModalOpen(true); 
+                                console.log(item);
+                                setOnEventHistory(item);
+                                console.log(onEventHistory);
+                            }}
+                    />
 
-{/* 
-                    {displayParts  && <View>
-                                {participants.map(p => (
-                                     <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
-                                                 )
-                                        }</View> } */}
-                          <TouchableHighlight 
-                                style={styles.displayParts} 
-                                onPress={() => {
-                                    getParticipants(item).then((res) =>{
-                                        setExpanded(true);
-                                        setParticipants(res);
-                                        console.log(participants);
-                                        setLoading(!loading);
-                                        })
-                                }
-                            }
-                                underlayColor="#f1f1f1">
-                            <View >
-                                <Image source={ require('../assets/participants.png') } style={styles.expandIcon}></Image>
-                            </View>
-                            </TouchableHighlight>
+                   {onEventHistory && <Modal visible={modalOpen} animationType='fade'>
+                        <View style={styles.modalContent}>
+                                <Card  key={onEventHistory.key}>
+                                    <Text style={styles2.title}>
+                                    {onEventHistory.title} {onEventHistory.place}
+                                    </Text>
+
+                                    <Text style={styles2.datetime}>{onEventHistory.dateTime}</Text>
+                                    <Text style={styles2.available}>
+                                        Av: {onEventHistory.currentPers}/{onEventHistory.maxPers}</Text>
+
+                                        {displayParts  && 
+                                            <Card key={i} ><View style={{alignItems:'center',alignSelf:'center', marginTop:-20,}}>
+                                                {participants.map(p => (
+                                                    <Text style={styles.participant}>{p.firstName} {p.lastName} </Text>)
+                                                        )
+                                                        }</View></Card>}
+                                
+                                     <TouchableHighlight 
+                                            style={styles.displayParts} 
+                                            onPress={() => {
+                                                getParticipants(onEventHistory).then((res) =>{
+                                                    setExpanded(true);
+                                                    setParticipants(res);
+                                                    console.log(participants);
+                                                    setLoading(!loading);
+                                                    })
+                                            }
+                                        }
+                                            underlayColor="#f1f1f1">
+                                        <View >
+                                            <Ionicons name="people" size={35} color="black" />
+                                        </View>
+                                        </TouchableHighlight>
+                                        
+                                        <TouchableHighlight 
+                                        style={styles.deleteEvent} 
+                                        onPress={() => {
+                                                console.log("Event deleted!");
+                                                Alert.alert(
+                                                            'Really?! ' +'😳',
+                                                            'Your event has been successfully deleted!' 
+                                                        );      }}>
+                                            <MaterialIcons name="delete" size={30} color="black" />
+                                        </TouchableHighlight >
+                                        </Card>
+
+                          <MaterialIcons name="arrow-back" size={40} color="black" style={styles.backButton} 
+                          onPress={() => {
+                              setParticipants([]);
+                              setModalOpen(false);
+                              setdisplayParts(false);}}/>
+                        </View>
+                    </Modal> }
+                            
                 </Card>)
                 )}
                 </View>
@@ -286,6 +319,10 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+    modalContent: {
+        flex: 1,
+        marginTop:150,
+    },
     participant:{
         fontSize: 15,
         color: '#8C625E',
@@ -335,21 +372,46 @@ const styles = StyleSheet.create({
         position: 'absolute',
         opacity: 1
     },
-    displayParts: {
+    infoBtn: {
         backgroundColor: '#F2E0D5',
         borderRadius: 100,
         width:60,
         height:60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: 5,
-        marginTop:-24,
-        marginLeft:10,
-        borderRadius: 100,
+        padding: 5,
         alignSelf: 'flex-end',
         position: 'absolute',
-        opacity: 1
-      
+        paddingLeft:13,
+        paddingTop:10,
+    }, 
+    displayParts: {
+        width: 50,
+        height: 50,
+        color: '#8C625E',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 1,
+        borderRadius: 100,
+        backgroundColor: '#F2E0D5',
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        opacity: 1,
+        marginLeft:13,
+        marginTop:-35,
+    },
+    deleteEvent:{
+        width: 50,
+        height: 50,
+        color: '#8C625E',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 1,
+        borderRadius: 100,
+        backgroundColor: '#F2E0D5',
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        opacity: 1,
+        marginLeft:13,
+        marginTop:20,
     }
 });
 
@@ -385,19 +447,7 @@ const styles2 = StyleSheet.create({
         left: 20,
         marginTop:0,
     },
-    joinButton: {
-        width: 50,
-        height: 50,
-        color: '#8C625E',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 1,
-        borderRadius: 100,
-        backgroundColor: '#F2E0D5',
-        alignSelf: 'flex-end',
-        position: 'absolute',
-        opacity: 1
-    },
+   
     addEventButton: {
         borderWidth: 3,
         borderColor: "#f2f2f2",
@@ -406,6 +456,31 @@ const styles2 = StyleSheet.create({
         alignSelf: 'center'
     }
 });
+
+
+{/* 
+                    {displayParts  && <View>
+                                {participants.map(p => (
+                                     <Text style={styles.participant}>{p.firstName} {p.lastName}</Text>                        )
+                                                 )
+                                        }</View> } */}
+                          {/* <TouchableHighlight 
+                                style={styles.displayParts} 
+                                onPress={() => {
+                                    getParticipants(item).then((res) =>{
+                                        setExpanded(true);
+                                        setParticipants(res);
+                                        console.log(participants);
+                                        setLoading(!loading);
+                                        })
+                                }
+                            }
+                                underlayColor="#f1f1f1">
+                            <View >
+                                <Image source={ require('../assets/participants.png') } style={styles.expandIcon}></Image>
+                            </View>
+                            </TouchableHighlight> */}
+                            
 
 
 //get image from firebase

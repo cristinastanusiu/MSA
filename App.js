@@ -112,7 +112,6 @@ if(!firebase.apps.length) { firebase.initializeApp(ApiKeys.firebaseConfig)}
 
 export default () => {
   return (
-    
     <AuthProvider>
       <ContactsProvider>
         <App />
