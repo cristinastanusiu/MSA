@@ -10,18 +10,16 @@ import {
     RefreshControl
 } from 'react-native';
 import Card from "./shared/Card";
+import EventCard from "./shared/EventCard";
 import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddEventForm from './AddEventForm';
 import axios from 'axios';
 import {Context as AuthContext} from '../Context/AuthContext';
-import Toast from 'react-native-toast-message';
 import * as firebase from 'firebase';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
-// import {Context as ContactsContext} from '../Context/ContactsContext';
-// import { Context } from "../Context/Context"
 
 
 const wait = (timeout) => {
@@ -37,10 +35,8 @@ export default function Events() {
   const [modalOpen, setModalOpen] = useState(false);
   const [eventList, setEventList] = useState([]);
   const {state} = useContext(AuthContext);
-  // const {state: cstate, updateState} = useContext(ContactsContext);
-  // const [context, setContext] = useContext(Context);
   const [contacts, setContacts] = useState([]);
-  // const [agenda, setAgenda] = useState([]);
+  const [joined, setJoined] = useState(false)
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -79,7 +75,8 @@ export default function Events() {
 
     const isMyContact = (e) => {
       for(var i=0; i<agenda.length; i++){
-        if(agenda[i].phone === e.phone){
+        console.log(agenda[i].phone)
+        if(agenda[i].phone === e.phone || e.phone === state.phoneNumber){
           console.log("found");
           e.contactName=agenda[i].name;
           return true;
@@ -146,12 +143,9 @@ export default function Events() {
 
   return (
   <View style={styles.container}>
-    <Entypo name="add-to-list"
-            size={30}
-            color="black"
-            style={styles.addEventButton}
-            onPress={() => setModalOpen(true)}
-    />
+    <TouchableOpacity onPress={() => setModalOpen(true)} style={styles.addEventButton}>
+      <AntDesign name="plus" size={20} style={{marginTop:-5}} color="#5E8C7F" />
+    </TouchableOpacity>
     <Modal visible={modalOpen} animationType='slide'>
       <View style={styles.modalContent}>
         <AddEventForm addEvent={addEvent} />
@@ -160,32 +154,9 @@ export default function Events() {
     </Modal>
     <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       {eventList.map(item => (
-
         <Card key={item.key}>
-
-          <View>
-              {!item.img && <Image source={require('../assets/default.png')} style={styles.userImage} />}
-              {item.img && <Image source={{ uri: item.img }} style={styles.userImage} />}
-          </View>
-          <Text style={styles.hostnr}> {item.phone} </Text>
-          <Text style={styles.hostname}> {item.contactName} </Text>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.place}>{item.place}</Text>
-          <Text style={styles.datetime}>{item.dateTime}</Text>
-          <Text style={styles.available}>{item.currentPers}/{item.maxPers} joined</Text>
-
-          { item.currentPers < item.maxPers &&
-          <TouchableOpacity onPress={() => {
-            joinEvent(item);
-            Toast.show({
-            text1: 'Great!',
-            text2: 'You joined the party.' +'🍷'
-          });}
-          } style={styles.joinButton}>
-            <AntDesign name="adduser" size={30} color="#5E8C7F" />
-          </TouchableOpacity>
-        }
-
+          <EventCard joinEvent={joinEvent} item={item}>
+          </EventCard>
        </Card>)
       )
     }
@@ -207,76 +178,21 @@ const styles = StyleSheet.create({
         paddingLeft: 90,
         backgroundColor: '#D9C6BF'//#66CCCC'
     },
-    title: {
-        fontSize: 18,
-        color: '#618777',
-        paddingLeft: 90,
-        position: 'absolute',
-        marginTop:-45,
-    },
-    place: {
-      fontSize: 12,
-      color: '#8C625E',
-      paddingLeft: 90,
-      position: 'absolute',
-      marginTop:20,
-  },
-    userImage: {
-        flex: 1,
-        width: 80,
-        height: 80,
-        marginTop:-20,
-        borderRadius:50,
-    },
-    hostnr: {
-        marginTop: 5,
-        fontSize: 12,
-        color: '#618777',
-        position: 'absolute',
-        paddingLeft: 87,
-    },
-    hostname: {
-        marginTop: -20,
-        fontSize: 18,
-        color: '#618777',
-        position: 'absolute',
-        paddingLeft: 87,
-    },
-    datetime: {
-        color: '#8C625E',
-        fontSize: 12,
-        paddingLeft: 90,
-        position: 'absolute',
-        marginTop:35,
-    },
-    available: {
-        color: '#8C625E',
-        fontSize: 12,
-        position: 'absolute',
-        paddingLeft:90,
-        marginTop:50,
-    },
-    joinButton: {
-        width: 70,
-        height: 70,
-        color: '#8C625E',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: 5,
-        marginTop:-14,
-        marginLeft:10,
-        borderRadius: 100,
-        backgroundColor: '#FDEFDA',
-        alignSelf: 'flex-end',
-        position: 'absolute',
-        opacity: 1
-    },
     addEventButton: {
-        borderWidth: 3,
-        borderColor: "#f2f2f2",
-        padding: 10,
-        borderRadius: 10,
-        alignSelf: 'center'
+      width: 50,
+      height: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingTop: 5,
+      marginTop:620,
+      marginLeft: 300,
+      borderRadius: 50,
+      backgroundColor: '#618777',
+      // alignSelf: 'center',
+      position: 'absolute',
+      opacity: .5,
+      zIndex: 2,
+      borderColor: 'transparent'
     },
     backButton: {
         borderWidth: 3,
